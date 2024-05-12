@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>MAI Lobby System</title>
+    <link rel="stylesheet" href="{% static 'css/listlobby.css' %}">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <span class="header-title">МАИ</span>
+            <span class="username">username</span>
+        </div>
+    </header>
+    <main>
+        <div class="sidebar">
+            <button id="createLobby">создать лобби</button>
+        </div>
+        <div class="lobby-list" id="lobbyList">
+            {% comment %}<div class="lobby-item">
+                <span class="lobby-name">1 лобби</span>
+                <button class="join-button">войти</button>
+            </div>
+            <div class="lobby-item">
+                <span class="lobby-name">2 лобби</span>
+                <button class="join-button">войти</button>
+            </div>
+            <div class="lobby-item">
+                <span class="lobby-name">3 лобби</span>
+                <button class="join-button">войти</button>
+            </div>{% endcomment %}
+        </div>
+    </main>
+    <script src="{% static 'js/listlobby.js' %}"></script>
+</body>
+</html>
+

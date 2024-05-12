@@ -1,0 +1,146 @@
+/* lobby.css */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #2d66f1;
+    color: #f2f2f2;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.header .header-title {
+    margin-left: 5%;
+}
+
+.header .username {
+    margin-right: 5%;
+}
+
+main {
+    display: flex;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    width: 25%;
+}
+
+.apartment-list, .selected-apartments {
+    padding: 10px;
+    width: 40%;
+    flex-grow: 1;
+}
+
+.apartment {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.filters {
+    margin: 0;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 5px;
+}
+
+.filters label, .filters input, .filters select, .filters button {
+    display: block;
+    width: 90%;
+    padding: 8px;
+}
+
+button, .add-button {
+    background-color: #0057B7;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-block;
+    margin-top: 8px;
+}
+
+button:hover, .add-button:hover {
+    background-color: #003399;
+}
+
+.filters input[type="number"], .filters select, .filters input[type="text"] {
+    width: calc(100% - 20px);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.apartment-list ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.apartment-list li {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.apartment-details {
+    flex-grow: 1;
+}
+
+.apartment-link {
+    display: block;
+    color: #0056b3;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.apartment-link:hover {
+    text-decoration: underline;
+}
+
+.apartment-price, .apartment-area {
+    display: block;
+    color: #333;
+    margin-top: 5px;
+}
+
+button, .add-button {
+    background-color: #0057B7;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-block;
+}
+
+button:hover, .add-button:hover {
+    background-color: #003399;
+}
+
+.filters input[type="number"], .filters select, .filters input[type="text"] {
+    width: calc(100% - 20px);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
