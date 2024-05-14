@@ -25,6 +25,9 @@ router.register(r'Flat', FlatViewSet)
 
 urlpatterns = [
     # path('', views.lobby, name='lobby'),
-    path('', views.search_apartments, name='lobby'),
-    # path('', views.listlobby, name='listlobby'),
+    # path('lobby/', views.search_apartments, name='lobby'),
+    path('', views.list_lobby_view, name='list-lobby'),
+    path('lobby/<int:lobby_id>/', views.lobby_detail_view, name='lobby-detail'),
+    path('add_flat/', views.add_flat, name='add_flat'),
+    path('remove_flat/', views.remove_flat, name='remove_flat'),
 ]

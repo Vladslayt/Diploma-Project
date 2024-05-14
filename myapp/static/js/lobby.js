@@ -1,13 +1,64 @@
-function addToSelected(flatId, flatLink, flatPrice) {
-    const selectedList = document.getElementById('selectedList');
-    const listItem = document.createElement('li');
-    listItem.textContent = `${flatLink} - Цена: ${flatPrice}`;
-    selectedList.appendChild(listItem);
+/*
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.addForm').forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            console.log('Add form submitted');
+            let formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            }).then(response => response.text())
+              .then(data => {
+                  console.log('Add form response received');
+                  document.body.innerHTML = data;
+              })
+              .catch(error => console.error('Error:', error));
+        });
+    });
 
-    // Опционально: скрыть кнопку добавления после использования
-    const addButton = document.querySelector(`#flat_${flatId} .add-button`);
-    if (addButton) {
-        addButton.disabled = true;
-        addButton.textContent = 'Добавлено';
+    document.querySelectorAll('.removeForm').forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            console.log('Remove form submitted');
+            let formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            }).then(response => response.text())
+              .then(data => {
+                  console.log('Remove form response received');
+                  document.body.innerHTML = data;
+              })
+              .catch(error => console.error('Error:', error));
+        });
+    });
+
+    const filterForm = document.querySelector('#filterForm');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            console.log('Filter form submitted');
+            let formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            }).then(response => response.text())
+              .then(data => {
+                  console.log('Filter form response received');
+                  document.body.innerHTML = data;
+              })
+              .catch(error => console.error('Error:', error));
+        });
     }
-}
+});
+*/

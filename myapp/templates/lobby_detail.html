@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>MAI Apartment Selector</title>
+    <link rel="stylesheet" href="{% static 'css/lobby.css' %}?v=1.8">
+    <script src="{% static 'js/lobby.js' %}?v=1.8" defer></script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <span class="header-title">MAI</span>
+            <span class="username">username</span>
+        </div>
+    </header>
+    <h1 class="lobby-id lobby-title">Лобби с ID: {{ lobby.id }}</h1>
+    <main>
+        <div class="sidebar">
+            <div class="filters">
+                <h2>Фильтры</h2>
+                <form id="filterForm" method="post" action="">
+                    {% csrf_token %}
+                    <label for="min_price">Минимальная цена:</label>
+                    <input type="number" id="min_price" name="min_price" value="{{ min_price }}" placeholder="Введите минимальную цену" autocomplete="off">
+                    
+                    <label for="max_price">Максимальная цена:</label>
+                    <input type="number" id="max_price" name="max_price" value="{{ max_price }}" placeholder="Введите максимальную цену" autocomplete="off">
+                    
+                    <label for="rooms">Количество комнат:</label>
+                    <input type="number" id="rooms" name="rooms" value="{{ rooms }}" placeholder="Введите количество комнат" autocomplete="off">
+                    
+                    <label for="region">Административный округ:</label>
+                    <select id="region" name="region" autocomplete="region">
+                        <option value="">Выберите округ</option>
+                        <option value="ЮАО" {% if region == "ЮАО" %}selected{% endif %}>Южный административный округ</option>
+                        <option value="ЦАО" {% if region == "ЦАО" %}selected{% endif %}>Центральный административный округ</option>
+                        <option value="САО" {% if region == "САО" %}selected{% endif %}>Северный административный округ</option>
+                    </select>
+                    
+                    <label for="district">Район:</label>
+                    <input type="text" id="district" name="district" value="{{ district|default:'' }}" placeholder="Введите район" autocomplete="off">
+                    
+                    <label for="underground">Станция метро:</label>
+                    <select id="underground" name="underground" autocomplete="off">
+                        <option value="">Выберите станцию метро</option>
+                        <option value="м. Бабушкинская" {% if underground == "м. Бабушкинская" %}selected{% endif %}>Бабушкинская</option>
+                    </select>
+                
+                    <button type="submit">Применить фильтры</button>
+                </form>
+            </div>
+        </div>
+        <div id="results" class="apartment-list">
+            <h2>Квартиры</h2>
+            <ul id="flatsList">
+                {% if flats_all %}
+                    {% for flat in flats_all %}
+                        <li>
+                            <div class="apartment-details">
+                                <a href="{{ flat.link }}" target="_blank" class="apartment-link">{{ flat.link }}</a>
+                                <span class="apartment-price">Цена: {{ flat.price_per_month }} руб.</span>
+                                <span class="apartment-area">Площадь: {{ flat.total_meters }} м²</span>
+                            </div>
+                            <form class="addForm" method="post" action="{% url 'add_flat' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
+                                <input type="hidden" name="flat_link" value="{{ flat.link }}">
+                                <input type="hidden" name="flat_price" value="{{ flat.price_per_month }}">
+                                <button type="submit" name="add_flat" class="add-button">Добавить</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    {% if submitted %}
+                        <p>Не найдено ни одной квартиры с данными фильтрами.</p>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </div>
+        <div class="selected-apartments">
+            <h2>Список добавленных квартир</h2>
+            <ul id="selectedList">
+                {% for flat in flats %}
+                    <li>
+                        <div class="apartment-details">
+                            <a href="{{ flat.link }}" target="_blank" class="apartment-link">{{ flat.link }}</a>
+                            <span class="apartment-price">Цена: {{ flat.price_per_month }} руб.</span>
+                        </div>
+                        <form class="removeForm" method="post" action="{% url 'remove_flat' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
+                            <input type="hidden" name="flat_id" value="{{ flat.id }}">
+                            <button type="submit" name="remove_flat" class="remove-button">Удалить</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </main>
+</body>
+</html>

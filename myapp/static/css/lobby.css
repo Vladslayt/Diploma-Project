@@ -1,4 +1,3 @@
-/* lobby.css */
 body, html {
     margin: 0;
     padding: 0;
@@ -19,12 +18,21 @@ header {
     width: 100%;
 }
 
-.header .header-title {
+.header-title {
     margin-left: 5%;
 }
 
-.header .username {
+.username {
     margin-right: 5%;
+}
+
+.lobby-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 10px;
+    box-sizing: border-box;
+    margin: 0 auto;
 }
 
 main {
@@ -46,12 +54,6 @@ main {
     flex-grow: 1;
 }
 
-.apartment {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
 .filters {
     margin: 0;
     padding: 20px;
@@ -63,7 +65,7 @@ main {
 .filters label, .filters input, .filters select, .filters button {
     display: block;
     width: 90%;
-    padding: 8px;
+    margin-bottom: 10px;
 }
 
 button, .add-button {
@@ -79,12 +81,6 @@ button, .add-button {
 
 button:hover, .add-button:hover {
     background-color: #003399;
-}
-
-.filters input[type="number"], .filters select, .filters input[type="text"] {
-    width: calc(100% - 20px);
-    border: 1px solid #ccc;
-    border-radius: 4px;
 }
 
 .apartment-list ul {
@@ -139,8 +135,57 @@ button:hover, .add-button:hover {
     background-color: #003399;
 }
 
-.filters input[type="number"], .filters select, .filters input[type="text"] {
-    width: calc(100% - 20px);
+#selectedList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#selectedList a {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+#selectedList a:hover {
+    text-decoration: underline;
+}
+
+.remove-button {
+    color: #ff0000;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.remove-button:hover {
+    background-color: #ffecec;
+}
+
+#selectedList .apartment-link, #selectedList .apartment-price, #selectedList .apartment-area {
+    margin-bottom: 5px;
+}
+
+#selectedList li {
+    background-color: #f9f9f9;
     border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
     border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#selectedList .apartment-details {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.remove-button {
+    margin-left: 20px;
+    padding: 5px 10px;
+    font-size: 14px;
 }
