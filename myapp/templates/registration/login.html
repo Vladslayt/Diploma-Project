@@ -1,0 +1,30 @@
+<!-- catalog/templates/registration/login.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <span class="header-title">MAI</span>
+            <a href="{% url 'register' %}">Регистрация</a>
+        </div>
+    </header>
+    <div class="login-container">
+        <h2>Вход</h2>
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Войти</button>
+        </form>
+        <div class="register-prompt">
+            <p>Еще нет аккаунта?</p>
+            <a href="{% url 'register' %}"><button class="register-button">Зарегистрироваться</button></a>
+        </div>
+    </div>
+</body>
+</html>

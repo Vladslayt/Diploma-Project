@@ -1,56 +1,76 @@
+{% extends "base_generic.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>MAI Lobby System</title>
+
+{% block title %}MAI Lobby System{% endblock %}
+
+{% block extra_head %}
     <link rel="stylesheet" href="{% static 'css/listlobby.css' %}?v=1.5">
-</head>
-<body>
-    <header>
-        <div class="header-content">
-            <span class="header-title">МАИ</span>
-            <span class="username">username</span>
+{% endblock %}
+
+{% block content %}
+    <div class="sidebar">
+        <div class="create-lobby-form">
+            <h2>Новое лобби</h2>
+            <form id="createLobbyForm" method="post" action="{% url 'list-lobby' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" id="createLobby">Создать лобби</button>
+            </form>
         </div>
-    </header>
-    <main>
-        <div class="sidebar">
-            <div class="create-lobby-form">
-                <h2>Новое лобби</h2>
-                <form id="createLobbyForm" method="post" action="{% url 'list-lobby' %}">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" id="createLobby">Создать лобби</button>
-                </form>
-            </div>
+    </div>
+    <div class="list-sidebar">
+        <div class="lobby-list" id="lobbyList">
+            <h2>Лобби</h2>
+            {% if lobbies %}
+                <ul>
+                    {% for lobby in lobbies %}
+                        <li class="lobby-item">
+                            <div class="lobby-details">
+                                <div class="lobby-name">{{ lobby.name }}</div>
+                                <div class="lobby-people">Количество человек: {{ lobby.max_people }}</div>
+                                <div class="lobby-private">Приватное: {{ lobby.is_private|yesno:"Да,Нет" }}</div>
+                                <div class="lobby-type">Тип: {{ lobby.get_lobby_type_display }}</div>
+                            </div>
+                            <form method="post" class="removeLobbyForm" action="">
+                                {% csrf_token %}
+                                <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
+                                <button type="submit" name="delete_lobby" class="remove-button">Удалить</button>
+                            </form>
+                            <a href="{% url 'lobby-detail' lobby.id %}" class="join-button">Войти</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Нет созданных лобби.</p>
+            {% endif %}
         </div>
-        <div class="list-sidebar">
-            <div class="lobby-list" id="lobbyList">
-                <h2>Лобби</h2>
-                {% if lobbies %}
-                    <ul>
-                        {% for lobby in lobbies %}
-                            <li class="lobby-item">
-                                <div class="lobby-details">
-                                    <div class="lobby-name">{{ lobby.name }}</div>
-                                    <div class="lobby-people">Количество человек: {{ lobby.max_people }}</div>
-                                    <div class="lobby-private">Приватное: {{ lobby.is_private|yesno:"Да,Нет" }}</div>
-                                    <div class="lobby-type">Тип: {{ lobby.get_lobby_type_display }}</div>
-                                </div>
-                                <form method="post" class="removeLobbyForm" action="">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
-                                    <button type="submit" name="delete_lobby" class="remove-button">Удалить</button>
-                                </form>
-                                <a href="{% url 'lobby-detail' lobby.id %}" class="join-button">Войти</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>Нет созданных лобби.</p>
-                {% endif %}
-            </div>
+    </div>
+
+    <div class="list-sidebar">
+        <div class="lobby-list" id="lobbyList">
+            <h2>Лобби</h2>
+            {% if user_lobbies %}
+                <ul>
+                    {% for lobby in user_lobbies %}
+                        <li class="lobby-item">
+                            <div class="lobby-details">
+                                <div class="lobby-name">{{ lobby.name }}</div>
+                                <div class="lobby-people">Количество человек: {{ lobby.max_people }}</div>
+                                <div class="lobby-private">Приватное: {{ lobby.is_private|yesno:"Да,Нет" }}</div>
+                                <div class="lobby-type">Тип: {{ lobby.get_lobby_type_display }}</div>
+                            </div>
+                            <form method="post" class="removeLobbyForm" action="">
+                                {% csrf_token %}
+                                <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
+                                <button type="submit" name="delete_lobby" class="remove-button">Удалить</button>
+                            </form>
+                            <a href="{% url 'lobby-detail' lobby.id %}" class="join-button">Войти</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Нет своих лобби.</p>
+            {% endif %}
         </div>
-    </main>
-</body>
-</html>
+    </div>
+{% endblock %}

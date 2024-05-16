@@ -1,0 +1,11 @@
+<!-- catalog/templates/catalog/profile.html -->
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h2>Анкета пользователя</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Сохранить</button>
+</form>
+{% endblock %}

@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -7,6 +8,8 @@ class Lobby(models.Model):
     is_private = models.BooleanField(default=False)
     lobby_type = models.CharField(max_length=10, choices=[('male', 'Мужское'), ('female', 'Женское')], default='male')
     created_at = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey(User, related_name='owned_lobbies', on_delete=models.CASCADE)
+    members = models.ManyToManyField(User, related_name='joined_lobbies', blank=True)
 
     def __str__(self):
         return self.name
@@ -21,6 +24,12 @@ class Flat(models.Model):
     def __str__(self):
         return self.link
 
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(max_length=500, blank=True)
+    location = models.CharField(max_length=30, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
 
 # class Flat(models.Model):
 #     link = models.CharField(max_length=512, primary_key=True)

@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}MAI Lobby System{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_head %}
+    {% endblock %}
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <span class="header-title">MAI</span>
+            {% if user.is_authenticated %}
+                <span class="username">{{ user.username }} | <a href="{% url 'login' %}">Выйти</a></span>
+            {% else %}
+                <span class="username"><a href="{% url 'login' %}">Вход</a> | <a href="{% url 'register' %}">Регистрация</a></span>
+            {% endif %}
+        </div>
+    </header>
+    {% block title-lobby %}
+    {% endblock %}
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 MAI. Все права защищены.</p>
+            <a href="{% url 'privacy_policy' %}">Политика конфиденциальности</a>
+        </div>
+    </footer>
+</body>
+</html>

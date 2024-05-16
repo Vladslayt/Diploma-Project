@@ -1,29 +1,60 @@
 import requests
-from django.http import HttpResponse, JsonResponse
+from django.contrib.auth import login
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-
+from django.views import View
 from rest_framework import viewsets
-
-from .forms import LobbyForm
-from .models import Lobby, Flat
+from .forms import LobbyForm, RegisterForm, ProfileForm
+from .models import Lobby, Flat, Profile
 from .serializers import LobbySerializer, FlatSerializer
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
 
 
-def list_lobby_view(request):
-    if request.method == 'POST' and 'delete_lobby' in request.POST:
-        lobby_id = request.POST.get('lobby_id')
-        lobby = get_object_or_404(Lobby, id=lobby_id)
-        lobby.delete()
-        return redirect('list-lobby')
-    elif request.method == 'POST':
-        form = LobbyForm(request.POST)
-        if form.is_valid():
-            form.save()
+@login_required
+def list_lobby_view(request, lobby_id=0):
+    all_lobbies = Lobby.objects.all()
+    user_lobbies = request.user.joined_lobbies.all()
+
+    if request.method == 'POST':
+        if 'join_lobby' in request.POST:
+            lobby = get_object_or_404(Lobby, id=lobby_id)
+            if lobby.members.count() < lobby.max_people:
+                return lobby_detail_view(request, lobby_id)
+        if 'delete_lobby' in request.POST:
+            lobby_id = request.POST.get('lobby_id')
+            lobby = get_object_or_404(Lobby, id=lobby_id)
+            lobby.delete()
             return redirect('list-lobby')
+        else:
+            form = LobbyForm(request.POST)
+            if form.is_valid():
+                new_lobby = form.save(commit=False)
+                new_lobby.owner = request.user
+                new_lobby.save()
+                new_lobby.members.add(request.user)
+                return redirect('list-lobby')
     else:
         form = LobbyForm()
-    lobbies = Lobby.objects.all()
-    return render(request, 'listlobby.html', {'lobbies': lobbies, 'form': form})
+    return render(request, 'listlobby.html', {'all_lobbies': all_lobbies, 'user_lobbies': user_lobbies, 'form': form})
+
+
+# def list_lobby_view(request):
+#     if request.method == 'POST' and 'delete_lobby' in request.POST:
+#         lobby_id = request.POST.get('lobby_id')
+#         lobby = get_object_or_404(Lobby, id=lobby_id)
+#         lobby.delete()
+#         return redirect('list-lobby')
+#     elif request.method == 'POST':
+#         form = LobbyForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('list-lobby')
+#     else:
+#         form = LobbyForm()
+#     lobbies = Lobby.objects.all()
+#     return render(request, 'listlobby.html', {'lobbies': lobbies, 'form': form})
 
 
 def lobby_detail_view(request, lobby_id):
@@ -84,7 +115,7 @@ def lobby_detail_view(request, lobby_id):
                 request.session['flats_all'] = flats_all
                 request.session['submitted'] = submitted
 
-        flats = lobby.flats.all()  # Обновление списка квартир после добавления или удаления
+        flats = lobby.flats.all()
 
     return render(request, 'lobby_detail.html', {
         'lobby': lobby,
@@ -98,6 +129,23 @@ def lobby_detail_view(request, lobby_id):
         'district': district,
         'underground': underground,
     })
+
+
+@login_required
+def profile_view(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = ProfileForm(instance=profile)
+    return render(request, 'profile.html', {'form': form})
+
+
+def privacy_policy_view(request):
+    return render(request, 'privacy_policy.html')
 
 
 class LobbyViewSet(viewsets.ReadOnlyModelViewSet):
@@ -128,3 +176,27 @@ def remove_flat(request):
         lobby_id = flat.lobby.id
         flat.delete()
         return redirect('lobby-detail', lobby_id=lobby_id)
+
+
+class CustomLoginView(LoginView):
+    template_name = 'registration/login.html'
+
+    def get_success_url(self):
+        return reverse_lazy('list-lobby')
+
+
+class RegisterView(View):
+    form_class = RegisterForm
+    template_name = 'registration/register.html'
+
+    def get(self, request):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('list-lobby')
+        return render(request, self.template_name, {'form': form})
