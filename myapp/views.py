@@ -1,6 +1,8 @@
 import requests
 from django.contrib.auth import login
-from django.http import HttpResponse
+from django.contrib.auth.forms import UserCreationForm
+from django.core.paginator import Paginator
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from rest_framework import viewsets
@@ -13,20 +15,41 @@ from django.contrib.auth.decorators import login_required
 
 
 @login_required
-def list_lobby_view(request, lobby_id=0):
+def list_lobby_view(request):
     all_lobbies = Lobby.objects.all()
     user_lobbies = request.user.joined_lobbies.all()
-
+    form = LobbyForm()
     if request.method == 'POST':
         if 'join_lobby' in request.POST:
+            lobby_id = request.POST.get('lobby_id')
             lobby = get_object_or_404(Lobby, id=lobby_id)
-            if lobby.members.count() < lobby.max_people:
+            if lobby.members.filter(id=request.user.id).exists():
                 return lobby_detail_view(request, lobby_id)
-        if 'delete_lobby' in request.POST:
+
+            elif lobby.members.count() < lobby.max_people:
+                if not lobby.members.filter(id=request.user.id).exists():
+                    lobby.members.add(request.user)
+                return lobby_detail_view(request, lobby_id)
+
+            else:
+                return render(request, 'listlobby.html', {
+                    'all_lobbies': all_lobbies,
+                    'user_lobbies': user_lobbies,
+                    'form': form,
+                    'show_modal': True,
+                    'modal_message': 'Лобби уже переполнено!'
+                })
+        elif 'delete_lobby' in request.POST:
             lobby_id = request.POST.get('lobby_id')
             lobby = get_object_or_404(Lobby, id=lobby_id)
             lobby.delete()
-            return redirect('list-lobby')
+            return render(request, 'listlobby.html', {
+                'all_lobbies': all_lobbies,
+                'user_lobbies': user_lobbies,
+                'form': form,
+                'show_modal': False
+            })
+
         else:
             form = LobbyForm(request.POST)
             if form.is_valid():
@@ -34,10 +57,21 @@ def list_lobby_view(request, lobby_id=0):
                 new_lobby.owner = request.user
                 new_lobby.save()
                 new_lobby.members.add(request.user)
-                return redirect('list-lobby')
+                return render(request, 'listlobby.html', {
+                    'all_lobbies': all_lobbies,
+                    'user_lobbies': user_lobbies,
+                    'form': form,
+                    'show_modal': False
+                })
+
     else:
         form = LobbyForm()
-    return render(request, 'listlobby.html', {'all_lobbies': all_lobbies, 'user_lobbies': user_lobbies, 'form': form})
+    return render(request, 'listlobby.html', {
+        'all_lobbies': all_lobbies,
+        'user_lobbies': user_lobbies,
+        'form': form,
+        'show_modal': False
+    })
 
 
 # def list_lobby_view(request):
@@ -57,6 +91,7 @@ def list_lobby_view(request, lobby_id=0):
 #     return render(request, 'listlobby.html', {'lobbies': lobbies, 'form': form})
 
 
+@login_required
 def lobby_detail_view(request, lobby_id):
     lobby = get_object_or_404(Lobby, id=lobby_id)
     flats = lobby.flats.all()
@@ -117,10 +152,20 @@ def lobby_detail_view(request, lobby_id):
 
         flats = lobby.flats.all()
 
+    # Pagination for flats_all
+    flats_all_paginator = Paginator(flats_all, 5)  # Show 5 flats per page
+    flats_all_page_number = request.GET.get('page_all')
+    flats_all_page_obj = flats_all_paginator.get_page(flats_all_page_number)
+
+    # Pagination for selected flats
+    flats_paginator = Paginator(flats, 5)  # Show 5 flats per page
+    flats_page_number = request.GET.get('page_selected')
+    flats_page_obj = flats_paginator.get_page(flats_page_number)
+
     return render(request, 'lobby_detail.html', {
         'lobby': lobby,
-        'flats_all': flats_all,
-        'flats': flats,
+        'flats_all': flats_all_page_obj,
+        'flats': flats_page_obj,
         'submitted': submitted,
         'min_price': min_price,
         'max_price': max_price,
@@ -200,3 +245,15 @@ class RegisterView(View):
             login(request, user)
             return redirect('list-lobby')
         return render(request, self.template_name, {'form': form})
+
+
+def register_view(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('list-lobby')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})

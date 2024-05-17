@@ -11,20 +11,61 @@ header {
     padding: 10px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .header-content {
+    padding-left: 5%;
+    padding-right: 5%;
     display: flex;
     justify-content: space-between;
     width: 100%;
+    align-items: center;
 }
 
 .header-title {
-    margin-left: 5%;
+    color: #f2f2f2;
+    text-decoration: none;
+    font-size: 1.5em;
+}
+
+.header-title:hover {
+    text-decoration: underline;
+}
+
+.auth-content {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
 }
 
 .username {
+    color: #f2f2f2;
+    margin-right: 10px;
+    font-size: 1.1em;
+    text-decoration: none;
+}
+
+.auth-button {
+    background-color: #0057B7;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 1em;
     margin-right: 5%;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.auth-button:hover {
+    background-color: #003399;
+}
+
+.divider {
+    color: #f2f2f2;
+    margin: 0 10px;
+    font-size: 1.1em;
 }
 
 main {
@@ -36,15 +77,64 @@ main {
 footer {
     background-color: #2d66f1;
     color: #f2f2f2;
-    padding: 10px;
+    padding: 5px;
     position: fixed;
     bottom: 0;
     width: 100%;
     text-align: center;
 }
 
+.footer-content p {
+    margin: 7px;
+}
+
 .footer-content a {
     color: #f2f2f2;
     text-decoration: none;
     margin-left: 15px;
+}
+
+.footer-content a:hover {
+    text-decoration: underline;
+}
+
+/* Стили для модального окна */
+.modal {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed; /* Оставаться на месте */
+    z-index: 1; /* Сидеть на вершине */
+    left: 0;
+    top: 0;
+    width: 100%; /* Полная ширина */
+    height: 100%; /* Полная высота */
+    overflow: auto; /* Включить прокрутку, если необходимо */
+    background-color: rgb(0,0,0); /* Черный цвет с прозрачностью */
+    background-color: rgba(0,0,0,0.4); /* Черный с непрозрачностью */
+    justify-content: center; /* Центрирование по горизонтали */
+    align-items: center; /* Центрирование по вертикали */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Могут быть изменены для размещения больше или меньше */
+    max-width: 500px; /* Максимальная ширина для ограничения размера */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border-radius: 5px;
+    position: relative;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
 }

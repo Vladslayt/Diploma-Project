@@ -6,36 +6,7 @@ body, html {
     background-color: #f2f2f2;
 }
 
-header {
-    background-color: #2d66f1;
-    color: #f2f2f2;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
-
-.header-title {
-    margin-left: 5%;
-}
-
-header a {
-    color: #f2f2f2;
-    text-decoration: none;
-    margin-right: 5%;
-}
-
-header a:hover {
-    text-decoration: underline;
-}
-
-.register-container {
+.auth-container {
     max-width: 400px;
     margin: 50px auto;
     padding: 20px;
@@ -44,36 +15,60 @@ header a:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.register-container h2 {
+.auth-container h2 {
     text-align: center;
     margin-bottom: 20px;
 }
 
-.register-container form {
+.auth-container form {
     display: flex;
     flex-direction: column;
 }
 
-.register-container label {
+.form-group {
+    margin-bottom: 15px;
+}
+
+.auth-container label {
     margin-bottom: 5px;
 }
 
-.register-container input {
-    margin-bottom: 15px;
+.auth-container input {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-.register-container button {
+.auth-button {
     background-color: #0057B7;
     color: white;
     border: none;
     padding: 10px;
     cursor: pointer;
     font-size: 16px;
+    margin-bottom: 10px;
 }
 
-.register-container button:hover {
+.auth-button:hover {
     background-color: #003399;
+}
+
+.login-prompt {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.auth-toggle-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.auth-toggle-button:hover {
+    background-color: #218838;
 }

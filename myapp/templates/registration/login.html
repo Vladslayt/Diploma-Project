@@ -1,30 +1,45 @@
-<!-- catalog/templates/registration/login.html -->
+{% extends "base_generic.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Вход</title>
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
-</head>
-<body>
-    <header>
-        <div class="header-content">
-            <span class="header-title">MAI</span>
-            <a href="{% url 'register' %}">Регистрация</a>
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=1.0">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h2>Вход</h2>
+    
+    {% if form.errors %}
+      <p class="error">Ваше имя пользователя и пароль не совпадают. Пожалуйста, попробуйте снова.</p>
+    {% endif %}
+    
+    {% if next %}
+      {% if user.is_authenticated %}
+        <p>Ваша учетная запись не имеет доступа к этой странице. Чтобы продолжить, пожалуйста, войдите в систему с учетной записью, которая имеет доступ.</p>
+      {% else %}
+        <p>Пожалуйста, войдите в систему, чтобы увидеть эту страницу.</p>
+      {% endif %}
+    {% endif %}
+    
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_username">{{ form.username.label }}</label>
+            {{ form.username }}
         </div>
-    </header>
-    <div class="login-container">
-        <h2>Вход</h2>
-        <form method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Войти</button>
-        </form>
-        <div class="register-prompt">
-            <p>Еще нет аккаунта?</p>
-            <a href="{% url 'register' %}"><button class="register-button">Зарегистрироваться</button></a>
+        <div class="form-group">
+            <label for="id_password">{{ form.password.label }}</label>
+            {{ form.password }}
         </div>
+        <button type="submit" class="auth-button">Войти</button>
+        <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+    
+    <p><a href="{% url 'password_reset' %}">Забыли пароль?</a></p>
+    
+    <div class="login-prompt">
+        <p>Нет аккаунта?</p>
+        <a href="{% url 'register' %}" class="auth-toggle-button">Зарегистрироваться</a>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

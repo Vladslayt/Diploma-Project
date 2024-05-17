@@ -30,7 +30,7 @@ urlpatterns = [
     path('remove_flat/', views.remove_flat, name='remove_flat'),
 
     path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/register/', views.RegisterView.as_view(), name='register'),
+    path('accounts/register/', views.register_view, name='register'),
     path('accounts/profile/', views.profile_view, name='profile'),
     path('privacy_policy/', views.privacy_policy_view, name='privacy_policy'),
 ]

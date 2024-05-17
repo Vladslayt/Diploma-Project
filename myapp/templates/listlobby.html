@@ -4,7 +4,8 @@
 {% block title %}MAI Lobby System{% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/listlobby.css' %}?v=1.5">
+    <link rel="stylesheet" href="{% static 'css/listlobby.css' %}?v=1.6">
+    <script src="{% static 'js/listlobby.js' %}?v=1.1" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -21,13 +22,14 @@
     <div class="list-sidebar">
         <div class="lobby-list" id="lobbyList">
             <h2>Лобби</h2>
-            {% if lobbies %}
+            {% if all_lobbies %}
                 <ul>
-                    {% for lobby in lobbies %}
+                    {% for lobby in all_lobbies %}
                         <li class="lobby-item">
                             <div class="lobby-details">
                                 <div class="lobby-name">{{ lobby.name }}</div>
                                 <div class="lobby-people">Количество человек: {{ lobby.max_people }}</div>
+                                <div class="lobby-people">Количество человек уже в лобби: {{ lobby.members.count }}</div>
                                 <div class="lobby-private">Приватное: {{ lobby.is_private|yesno:"Да,Нет" }}</div>
                                 <div class="lobby-type">Тип: {{ lobby.get_lobby_type_display }}</div>
                             </div>
@@ -36,7 +38,11 @@
                                 <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
                                 <button type="submit" name="delete_lobby" class="remove-button">Удалить</button>
                             </form>
-                            <a href="{% url 'lobby-detail' lobby.id %}" class="join-button">Войти</a>
+                            <form method="post" class="addLobbyForm" action="">
+                                {% csrf_token %}
+                                <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
+                                <button type="submit" name="join_lobby" class="join-button">Войти</button>
+                            </form>
                         </li>
                     {% endfor %}
                 </ul>
@@ -48,7 +54,7 @@
 
     <div class="list-sidebar">
         <div class="lobby-list" id="lobbyList">
-            <h2>Лобби</h2>
+            <h2>Лобби, в которых вы состоите</h2>
             {% if user_lobbies %}
                 <ul>
                     {% for lobby in user_lobbies %}
