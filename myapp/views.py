@@ -1,13 +1,12 @@
 import requests
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
-from django.core.paginator import Paginator
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views import View
+from django.contrib import messages
 from rest_framework import viewsets
-from .forms import LobbyForm, RegisterForm, ProfileForm
-from .models import Lobby, Flat, Profile
+from .forms import LobbyForm, ProfileForm
+from .models import Lobby, Flat, Profile, Rating
 from .serializers import LobbySerializer, FlatSerializer
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
@@ -18,19 +17,34 @@ from django.contrib.auth.decorators import login_required
 def list_lobby_view(request):
     all_lobbies = Lobby.objects.all()
     user_lobbies = request.user.joined_lobbies.all()
-    form = LobbyForm()
+    form = LobbyForm(request.POST or None)
+
     if request.method == 'POST':
         if 'join_lobby' in request.POST:
             lobby_id = request.POST.get('lobby_id')
             lobby = get_object_or_404(Lobby, id=lobby_id)
-            if lobby.members.filter(id=request.user.id).exists():
-                return lobby_detail_view(request, lobby_id)
 
+            if lobby.is_private:
+                password = request.POST.get('password')
+                if lobby.password == password:
+                    if not lobby.members.filter(id=request.user.id).exists():
+                        lobby.members.add(request.user)
+                    return redirect('lobby-detail', lobby_id=lobby_id)
+                else:
+                    return render(request, 'listlobby.html', {
+                        'all_lobbies': all_lobbies,
+                        'user_lobbies': user_lobbies,
+                        'form': form,
+                        'show_modal': True,
+                        'modal_message': 'Неверный пароль!'
+                    })
+
+            if lobby.members.filter(id=request.user.id).exists():
+                return redirect('lobby-detail', lobby_id=lobby_id)
             elif lobby.members.count() < lobby.max_people:
                 if not lobby.members.filter(id=request.user.id).exists():
                     lobby.members.add(request.user)
-                return lobby_detail_view(request, lobby_id)
-
+                    return redirect('lobby-detail', lobby_id=lobby_id)
             else:
                 return render(request, 'listlobby.html', {
                     'all_lobbies': all_lobbies,
@@ -39,56 +53,40 @@ def list_lobby_view(request):
                     'show_modal': True,
                     'modal_message': 'Лобби уже переполнено!'
                 })
+
         elif 'delete_lobby' in request.POST:
             lobby_id = request.POST.get('lobby_id')
             lobby = get_object_or_404(Lobby, id=lobby_id)
             lobby.delete()
-            return render(request, 'listlobby.html', {
-                'all_lobbies': all_lobbies,
-                'user_lobbies': user_lobbies,
-                'form': form,
-                'show_modal': False
-            })
+            return redirect('list-lobby')
 
-        else:
-            form = LobbyForm(request.POST)
-            if form.is_valid():
-                new_lobby = form.save(commit=False)
-                new_lobby.owner = request.user
-                new_lobby.save()
-                new_lobby.members.add(request.user)
-                return render(request, 'listlobby.html', {
-                    'all_lobbies': all_lobbies,
-                    'user_lobbies': user_lobbies,
-                    'form': form,
-                    'show_modal': False
-                })
+        elif 'create_lobby' in request.POST:
+            name = request.POST.get('name')
+            max_people = request.POST.get('max_people')
+            is_private = 'is_private' in request.POST
+            password = request.POST.get('password') if is_private else None
+            lobby_type = request.POST.get('lobby_type')
 
-    else:
-        form = LobbyForm()
+            if not name or not max_people or (is_private and not password):
+                messages.error(request, 'Заполните все обязательные поля.')
+                return redirect('list-lobby')
+
+            new_lobby = Lobby.objects.create(
+                name=name,
+                max_people=max_people,
+                is_private=is_private,
+                password=password,
+                lobby_type=lobby_type,
+                owner=request.user
+            )
+            new_lobby.members.add(request.user)
+            return redirect('list-lobby')
+
     return render(request, 'listlobby.html', {
         'all_lobbies': all_lobbies,
         'user_lobbies': user_lobbies,
-        'form': form,
         'show_modal': False
     })
-
-
-# def list_lobby_view(request):
-#     if request.method == 'POST' and 'delete_lobby' in request.POST:
-#         lobby_id = request.POST.get('lobby_id')
-#         lobby = get_object_or_404(Lobby, id=lobby_id)
-#         lobby.delete()
-#         return redirect('list-lobby')
-#     elif request.method == 'POST':
-#         form = LobbyForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('list-lobby')
-#     else:
-#         form = LobbyForm()
-#     lobbies = Lobby.objects.all()
-#     return render(request, 'listlobby.html', {'lobbies': lobbies, 'form': form})
 
 
 @login_required
@@ -109,13 +107,23 @@ def lobby_detail_view(request, lobby_id):
         if 'add_flat' in request.POST:
             link = request.POST.get('flat_link')
             price = request.POST.get('flat_price')
-            # Проверка на существование квартиры с таким же link в этом лобби
             if not Flat.objects.filter(link=link, lobby=lobby).exists():
                 Flat.objects.create(link=link, price_per_month=price, lobby=lobby)
+            else:
+                request.session['show_modal'] = True
+                request.session['modal_message'] = 'Квартира уже добавлена!'
+                return redirect('lobby-detail', lobby_id=lobby_id)
         elif 'remove_flat' in request.POST:
-            flat_id = request.POST.get('flat_id')
-            flat = get_object_or_404(Flat, id=flat_id)
+            flat_link = request.POST.get('flat_link')
+            flat = get_object_or_404(Flat, id=flat_link)
             flat.delete()
+        elif 'rate_flat' in request.POST:
+            flat_link = request.POST.get('flat_link')
+            score = int(request.POST.get('score'))
+            flat = get_object_or_404(Flat, id=flat_link)
+            rating, created = Rating.objects.update_or_create(
+                flat=flat, user=request.user, defaults={'score': score}
+            )
         else:
             submitted = True
             url = "http://localhost:8000/api/v1/flats"
@@ -140,32 +148,27 @@ def lobby_detail_view(request, lobby_id):
             response = requests.get(url, headers=headers, params=params)
             if response.status_code == 200:
                 flats_all = response.json()
+                if flats_all == 'No flats found':
+                    flats_all = None
+
                 request.session['flats_all'] = flats_all
                 request.session['submitted'] = submitted
             else:
                 return HttpResponse('Failed to fetch data', status=500)
 
-            if flats_all == "No flats found":
-                flats_all = None
-                request.session['flats_all'] = flats_all
-                request.session['submitted'] = submitted
-
         flats = lobby.flats.all()
 
-    # Pagination for flats_all
-    flats_all_paginator = Paginator(flats_all, 5)  # Show 5 flats per page
-    flats_all_page_number = request.GET.get('page_all')
-    flats_all_page_obj = flats_all_paginator.get_page(flats_all_page_number)
-
-    # Pagination for selected flats
-    flats_paginator = Paginator(flats, 5)  # Show 5 flats per page
-    flats_page_number = request.GET.get('page_selected')
-    flats_page_obj = flats_paginator.get_page(flats_page_number)
+    # # Pagination for selected flats
+    # flats_paginator = Paginator(flats, 5)  # Show 5 flats per page
+    # flats_page_number = request.GET.get('page_selected')
+    # flats_page_obj = flats_paginator.get_page(flats_page_number)
+    show_modal = request.session.pop('show_modal', False)
+    modal_message = request.session.pop('modal_message', '')
 
     return render(request, 'lobby_detail.html', {
         'lobby': lobby,
-        'flats_all': flats_all_page_obj,
-        'flats': flats_page_obj,
+        'flats_all': flats_all,
+        'flats': flats,
         'submitted': submitted,
         'min_price': min_price,
         'max_price': max_price,
@@ -173,6 +176,8 @@ def lobby_detail_view(request, lobby_id):
         'region': region,
         'district': district,
         'underground': underground,
+        'show_modal': show_modal,
+        'modal_message': modal_message,
     })
 
 
@@ -203,48 +208,53 @@ class FlatViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FlatSerializer
 
 
-def add_flat(request):
-    if request.method == 'POST':
-        lobby_id = request.POST.get('lobby_id')
-        lobby = get_object_or_404(Lobby, id=lobby_id)
-        link = request.POST.get('flat_link')
-        price = request.POST.get('flat_price')
-        if not Flat.objects.filter(link=link, lobby=lobby).exists():
-            Flat.objects.create(link=link, price_per_month=price, lobby=lobby)
-        return redirect('lobby-detail', lobby_id=lobby.id)
+# def add_flat(request):
+#     if request.method == 'POST':
+#         lobby_id = request.POST.get('lobby_id')
+#         lobby = get_object_or_404(Lobby, id=lobby_id)
+#         link = request.POST.get('flat_link')
+#         price = request.POST.get('flat_price')
+#         if not Flat.objects.filter(link=link, lobby=lobby).exists():
+#             Flat.objects.create(link=link, price_per_month=price, lobby=lobby)
+#
+#         page_selected = ""
+#         if request.POST.get("page_selected") is not None:
+#             page_selected = "page_selected=" + request.POST.get("page_selected")
+#
+#         redirect_url = reverse('lobby-detail', args=[lobby.id])
+#         if page_selected != "":
+#             redirect_url = f"{redirect_url}?{page_selected}"
+#
+#         return redirect(redirect_url)
 
 
-def remove_flat(request):
-    if request.method == 'POST':
-        flat_id = request.POST.get('flat_id')
-        flat = get_object_or_404(Flat, id=flat_id)
-        lobby_id = flat.lobby.id
-        flat.delete()
-        return redirect('lobby-detail', lobby_id=lobby_id)
+# def remove_flat(request):
+#     if request.method == 'POST':
+#         flat_id = request.POST.get('flat_id')
+#         flat = get_object_or_404(Flat, id=flat_id)
+#         lobby_id = flat.lobby.id
+#         flat.delete()
+#
+#         page_selected = ""
+#         if request.POST.get("page_selected") is not None:
+#             page_selected = "page_selected=" + request.POST.get("page_selected")
+#
+#         redirect_url = reverse('lobby-detail', args=[lobby_id])
+#         if page_selected != "":
+#             redirect_url = f"{redirect_url}?{page_selected}"
+#
+#         return redirect(redirect_url)
 
 
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
 
+    def get_redirect_url(self):
+        redirect_to = self.request.GET.get('next', self.get_success_url())
+        return redirect_to
+
     def get_success_url(self):
         return reverse_lazy('list-lobby')
-
-
-class RegisterView(View):
-    form_class = RegisterForm
-    template_name = 'registration/register.html'
-
-    def get(self, request):
-        form = self.form_class()
-        return render(request, self.template_name, {'form': form})
-
-    def post(self, request):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('list-lobby')
-        return render(request, self.template_name, {'form': form})
 
 
 def register_view(request):

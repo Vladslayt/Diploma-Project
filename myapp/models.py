@@ -6,6 +6,7 @@ class Lobby(models.Model):
     name = models.CharField(max_length=100, default='Новое Лобби')
     max_people = models.IntegerField(default=4)
     is_private = models.BooleanField(default=False)
+    password = models.CharField(max_length=255, blank=True, null=True, default='')
     lobby_type = models.CharField(max_length=10, choices=[('male', 'Мужское'), ('female', 'Женское')], default='male')
     created_at = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, related_name='owned_lobbies', on_delete=models.CASCADE)
@@ -16,13 +17,25 @@ class Lobby(models.Model):
 
 
 class Flat(models.Model):
-    link = models.URLField(max_length=200, default="https://example.com")
+    link = models.CharField(primary_key=True, max_length=512)
     price_per_month = models.IntegerField(default=0)
     total_meters = models.FloatField(default=0.0)
     lobby = models.ForeignKey(Lobby, related_name='flats', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.link
+
+
+class Rating(models.Model):
+    flat = models.ForeignKey(Flat, on_delete=models.CASCADE, related_name='ratings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    score = models.IntegerField()
+
+    class Meta:
+        unique_together = ('flat', 'user')
+
+    def __str__(self):
+        return f"{self.user.username} rated {self.flat} as {self.score}"
 
 
 class Profile(models.Model):

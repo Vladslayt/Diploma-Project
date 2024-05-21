@@ -1,16 +1,32 @@
 {% extends "base_generic.html" %}
 {% load static %}
 {% load bootstrap4 %}
+{% load average %}
 
 {% block title %}MAI Apartment Selector{% endblock %}
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/lobby.css' %}?v=1.9">
-    <script src="{% static 'js/lobby.js' %}?v=1.8" defer></script>
+    <link rel="stylesheet" href="{% static 'css/lobby.css' %}?v=1.21">
+    <script src="{% static 'js/lobby.js' %}?v=1.15" defer></script>
 {% endblock %}
 
 {% block title-lobby %}
-    <h1 class="lobby-id lobby-title">Лобби с ID: {{ lobby.id }}</h1>
+    <div class="lobby-header">
+        <h1 class="lobby-title">{{ lobby.name }}</h1>
+        <div class="lobby-info">
+            <span class="lobby-participants">Количество участников: {{ lobby.members.count }}</span>
+            <a class="view-participants" href="javascript:void(0);" onclick="toggleParticipants()">Посмотреть участников</a>
+            <div id="participants-list" class="participants-list" style="display: none;">
+                <ul>
+                    {% for member in lobby.members.all %}
+                        <li>{{ member.username }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
 {% endblock %}
+
+
 
 {% block content %}
     <div class="sidebar">
@@ -19,13 +35,13 @@
             <form id="filterForm" method="post" action="">
                 {% csrf_token %}
                 <label for="min_price">Минимальная цена:</label>
-                <input type="number" id="min_price" name="min_price" value="{{ min_price }}" placeholder="Введите минимальную цену" autocomplete="off">
+                <input type="number" id="min_price" name="min_price" value="{{ min_price|default_if_none:'' }}" placeholder="Введите минимальную цену" autocomplete="off">
 
                 <label for="max_price">Максимальная цена:</label>
-                <input type="number" id="max_price" name="max_price" value="{{ max_price }}" placeholder="Введите максимальную цену" autocomplete="off">
+                <input type="number" id="max_price" name="max_price" value="{{ max_price|default_if_none:'' }}" placeholder="Введите максимальную цену" autocomplete="off">
 
                 <label for="rooms">Количество комнат:</label>
-                <input type="number" id="rooms" name="rooms" value="{{ rooms }}" placeholder="Введите количество комнат" autocomplete="off">
+                <input type="number" id="rooms" name="rooms" value="{{ rooms|default_if_none:'' }}" placeholder="Введите количество комнат" autocomplete="off">
 
                 <label for="region">Административный округ:</label>
                 <select id="region" name="region" autocomplete="region">
@@ -48,120 +64,78 @@
             </form>
         </div>
     </div>
-    <div id="results" class="apartment-list">
+    <div class="apartment-list">
         <h2>Квартиры</h2>
-        <ul id="flatsList">
-            {% if flats_all %}
-                {% for flat in flats_all %}
-                    <li>
-                        <div class="apartment-details">
-                            <a href="{{ flat.link }}" target="_blank" class="apartment-link">{{ flat.link }}</a>
-                            <span class="apartment-price">Цена: {{ flat.price_per_month }} руб.</span>
-                            <span class="apartment-area">Площадь: {{ flat.total_meters }} м²</span>
-                        </div>
-                        <form class="addForm" method="post" action="{% url 'add_flat' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
-                            <input type="hidden" name="flat_link" value="{{ flat.link }}">
-                            <input type="hidden" name="flat_price" value="{{ flat.price_per_month }}">
-                            <button type="submit" name="add_flat" class="add-button">Добавить</button>
-                        </form>
-                    </li>
-                {% endfor %}
-            {% else %}
-                {% if submitted %}
-                    <p>Не найдено ни одной квартиры с данными фильтрами.</p>
-                {% endif %}
-            {% endif %}
-        </ul>
-        {% if flats_all.has_other_pages %}
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                {% if flats_all.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page_all={{ flats_all.previous_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo</span>
-                    </a>
-                </li>
-                {% endif %}
-
-                {% for num in flats_all.paginator.page_range %}
-                    {% if num == 1 or num == flats_all.paginator.num_pages %}
-                        <li class="page-item {% if flats_all.number == num %}active{% endif %}">
-                            <a class="page-link" href="?page_all={{ num }}">{{ num }}</a>
+        <div id="results" class="scrollable-list">
+            <ul id="flatsList">
+                {% if flats_all %}
+                    {% for flat in flats_all %}
+                        <li>
+                            <div class="apartment-details">
+                                <a href="{{ flat.link }}" target="_blank" class="apartment-link">{{ flat.link }}</a>
+                                <span class="apartment-price">Цена: {{ flat.price_per_month }} руб.</span>
+                                <span class="apartment-area">Площадь: {{ flat.total_meters }} м²</span>
+                            </div>
+                            <form class="addForm" method="post" action="{% url 'lobby-detail' lobby.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
+                                <input type="hidden" name="flat_link" value="{{ flat.link }}">
+                                <input type="hidden" name="flat_price" value="{{ flat.price_per_month }}">
+                                <!-- Add hidden inputs for current query parameters -->
+                                {% for key, value in request.GET.items %}
+                                    <input type="hidden" name="{{ key }}" value="{{ value }}">
+                                {% endfor %}
+                                <button type="submit" name="add_flat" class="add-button">Добавить</button>
+                            </form>
                         </li>
-                    {% elif num >= flats_all.number|add:-1 and num <= flats_all.number|add:1 %}
-                        <li class="page-item {% if flats_all.number == num %}active{% endif %}">
-                            <a class="page-link" href="?page_all={{ num }}">{{ num }}</a>
-                        </li>
-                    {% elif num == flats_all.number|add:-3 or num == flats_all.number|add:3 %}
-                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endfor %}
+                {% else %}
+                    {% if submitted %}
+                        <p>Не найдено ни одной квартиры с данными фильтрами.</p>
                     {% endif %}
-                {% endfor %}
-
-                {% if flats_all.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page_all={{ flats_all.next_page_number }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
                 {% endif %}
             </ul>
-        </nav>
-        {% endif %}
+        </div>
     </div>
     <div class="selected-apartments">
         <h2>Список добавленных квартир</h2>
-        <ul id="selectedList">
-            {% for flat in flats %}
-                <li>
-                    <div class="apartment-details">
-                        <a href="{{ flat.link }}" target="_blank" class="apartment-link">{{ flat.link }}</a>
-                        <span class="apartment-price">Цена: {{ flat.price_per_month }} руб.</span>
-                    </div>
-                    <form class="removeForm" method="post" action="{% url 'remove_flat' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
-                        <input type="hidden" name="flat_id" value="{{ flat.id }}">
-                        <button type="submit" name="remove_flat" class="remove-button">Удалить</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
-        {% if flats.has_other_pages %}
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                {% if flats.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page_selected={{ flats.previous_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-
-                {% for num in flats.paginator.page_range %}
-                    {% if num == 1 or num == flats.paginator.num_pages %}
-                        <li class="page-item {% if flats.number == num %}active{% endif %}">
-                            <a class="page-link" href="?page_selected={{ num }}">{{ num }}</a>
+        <div id="selectedList" class="scrollable-list">
+            <ul id="flatsAddedList">
+                {% if flats %}
+                    {% for flat in flats %}
+                        <li>
+                            <div class="apartment-details">
+                                <a href="{{ flat.link }}" target="_blank" class="apartment-link">{{ flat.link }}</a>
+                                <span class="apartment-price">Цена: {{ flat.price_per_month }} руб.</span>
+                                <span class="average-rating">Средняя оценка: 
+                                    {% with flat.ratings.all as ratings %}
+                                        {% if ratings %}
+                                            {{ ratings|average:'score' }}
+                                        {% else %}
+                                            Нет оценок
+                                        {% endif %}
+                                    {% endwith %}
+                                </span>
+                                <form method="post" class="rateForm" action="{% url 'lobby-detail' lobby.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="flat_id" value="{{ flat.id }}">
+                                <label for="score-{{ flat.id }}">Ваша оценка (1-10):</label>
+                                <input id="score-{{ flat.id }}" type="number" name="score" min="1" max="10" required>
+                                <button type="submit" name="rate_flat" class="rate-button">Оценить</button>
+                            </form>
+                            </div>
+                            <form class="removeForm" method="post" action="{% url 'lobby-detail' lobby.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
+                                <input type="hidden" name="flat_id" value="{{ flat.id }}">
+                                <button type="submit" name="remove_flat" class="remove-button">Удалить</button>
+                            </form>
                         </li>
-                    {% elif num >= flats.number|add:-2 and num <= flats.number|add:2 %}
-                        <li class="page-item {% if flats.number == num %}active{% endif %}">
-                            <a class="page-link" href="?page_selected={{ num }}">{{ num }}</a>
-                        </li>
-                    {% elif num == flats.number|add:-3 or num == flats.number|add:3 %}
-                        <li class="page-item disabled"><span class="page-link">...</span></li>
-                    {% endif %}
-                {% endfor %}
-
-                {% if flats.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page_selected={{ flats.next_page_number }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
+                    {% endfor %}
+                {% else %}
+                    <p>Нет добавленных квартир.</p>
                 {% endif %}
             </ul>
-        </nav>
-        {% endif %}
+        </div>
     </div>
 {% endblock %}

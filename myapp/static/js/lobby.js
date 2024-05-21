@@ -1,45 +1,38 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.joinForm').forEach(form => {
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-            let formData = new FormData(this);
-            fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-                }
-            }).then(response => response.json())
-              .then(data => {
-                  if (data.status === 'error') {
-                      showPopup(data.message);
-                  } else {
-                      window.location.href = window.location.href;
-                  }
-              });
-        });
+    const modal = document.getElementById("myModal");
+    const span = document.querySelector(".close");
+
+    // Close modal when clicking on <span> (x) or anywhere outside the modal
+    span.onclick = () => modal.style.display = "none";
+    window.onclick = event => {
+        if (event.target === modal) modal.style.display = "none";
+    };
+
+    // Сохранение положения прокрутки при выходе со страницы
+    window.addEventListener('beforeunload', function() {
+        localStorage.setItem('scrollPosition', document.getElementById('results').scrollTop);
+        localStorage.setItem('scrollPositionSelected', document.getElementById('selectedList').scrollTop);
     });
 
-    // Popup management
-    const popup = document.getElementById('popup');
-    const popupMessage = document.getElementById('popup-message');
-    const closeButton = document.querySelector('.close-button');
-
-    function showPopup(message) {
-        popupMessage.textContent = message;
-        popup.style.display = 'block';
+    // Восстановление положения прокрутки при загрузке страницы
+    if (localStorage.getItem('scrollPosition') !== null) {
+        document.getElementById('results').scrollTop = localStorage.getItem('scrollPosition');
     }
 
-    closeButton.onclick = function() {
-        popup.style.display = 'none';
-    }
-
-    window.onclick = function(event) {
-        if (event.target == popup) {
-            popup.style.display = 'none';
-        }
+    if (localStorage.getItem('scrollPositionSelected') !== null) {
+        document.getElementById('selectedList').scrollTop = localStorage.getItem('scrollPositionSelected');
     }
 });
+
+function toggleParticipants() {
+    var participantsList = document.getElementById("participants-list");
+    if (participantsList.style.display === "none" || participantsList.style.display === "") {
+        participantsList.style.display = "block";
+    } else {
+        participantsList.style.display = "none";
+    }
+}
+
 
 /*
 document.addEventListener('DOMContentLoaded', function() {

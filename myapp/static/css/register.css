@@ -53,6 +53,21 @@ body, html {
     background-color: #003399;
 }
 
+.policy-prompt {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.policy-prompt a {
+    color: #0057B7;
+    text-decoration: none;
+}
+
+.policy-prompt a:hover {
+    text-decoration: underline;
+}
+
 .login-prompt {
     text-align: center;
     margin-top: 20px;

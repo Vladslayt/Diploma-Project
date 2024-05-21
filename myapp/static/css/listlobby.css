@@ -1,3 +1,12 @@
+/* Основные стили для всего документа */
+body, html {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+}
+
+/* Стили для боковых панелей */
 .sidebar {
     width: 20%;
     display: flex;
@@ -12,7 +21,7 @@
     background-color: white;
     margin: 9px;
     border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .lobby-list {
@@ -20,117 +29,39 @@
     border-radius: 4px;
 }
 
+/* Заголовки списков лобби */
 .lobby-list h2 {
     margin-top: 0;
 }
 
+/* Стили для элементов списка лобби */
 .lobby-item {
     background-color: white;
     border: 1px solid #ccc;
     margin-bottom: 10px;
     padding: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-radius: 4px;
-}
-
-.join-button, #createLobby {
-    background-color: #0057B7;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.join-button:hover, #createLobby:hover {
-    background-color: #003399;
-}
-
-#createLobby {
-    margin-top: 10px;
-}
-
-.create-lobby-form {
-    background-color: #ffffff;
-    padding-bottom: 20px;
-    padding-top: 20px;
-    padding-left: 10px;
-    padding-right: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    border-radius: 5px;
-    width: 100%;
-}
-
-.create-lobby-form h2 {
-    margin-top: 0;
-}
-
-.create-lobby-form label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.create-lobby-form input[type="text"],
-.create-lobby-form input[type="number"],
-.create-lobby-form input[type="radio"] + label,
-.create-lobby-form input[type="checkbox"] {
-    margin-bottom: 10px;
-}
-
-.create-lobby-form div {
-    margin-bottom: 10px;
-}
-
-.create-lobby-form button {
-    background-color: #0057B7;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 14px;
-    display: block;
-    width: 100%;
-}
-
-.create-lobby-form button:hover {
-    background-color: #003399;
-}
-
-.lobby-item {
-    background-color: white;
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-    padding: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 4px;
+    flex-wrap: wrap;
 }
 
 .lobby-details {
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
 }
 
 .lobby-name, .lobby-people, .lobby-private, .lobby-type {
     margin-bottom: 5px;
 }
 
-.remove-button {
-    padding: 8px 16px;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.remove-button:hover {
-    background-color: #c82333;
+/* Стили для действий с лобби */
+.lobby-actions {
+    display: flex;
+    align-items: center;
 }
 
 .join-button, .remove-button {
@@ -143,7 +74,7 @@
     margin-left: 10px;
 }
 
-.join-button:hover {
+.join-button:hover, .remove-button:hover {
     background-color: #003399;
 }
 
@@ -153,4 +84,159 @@
 
 .remove-button:hover {
     background-color: #c82333;
+}
+
+/* Стили для формы создания лобби */
+.create-lobby-form {
+    width: 100%;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.create-lobby-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.create-lobby-form form {
+    display: flex;
+    flex-direction: column;
+}
+
+.create-lobby-form .form-group {
+    margin-bottom: 15px;
+}
+
+.create-lobby-form label {
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+}
+
+.create-lobby-form input, .create-lobby-form select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+#createLobby {
+    background-color: #0057B7;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#createLobby:hover {
+    background-color: #003399;
+}
+
+/* Стили для поля ввода пароля */
+.password-label {
+    font-weight: 500;
+    color: #333;
+}
+
+.password-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Стили для скроллбаров */
+.scrollable-list {
+    max-height: 600px; /* Настройте высоту по необходимости */
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.scrollable-list::-webkit-scrollbar {
+    width: 12px;
+}
+
+.scrollable-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+    border: 3px solid #f1f1f1;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+/* Стили для модального окна */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 300px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+}
+
+.modal-content button {
+    margin-left: 0;
+    width: auto;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover, .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal .form-group {
+    margin-bottom: 15px;
+}
+
+.modal .form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.modal .form-group input {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Удаление подчеркивания ссылки */
+.lobby-actions a.join-button {
+    text-decoration: none;
+    color: white;
 }

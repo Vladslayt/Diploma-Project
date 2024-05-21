@@ -1,24 +1,94 @@
-.lobby-title {
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
+.lobby-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
     padding: 10px;
     box-sizing: border-box;
     margin: 0 auto;
 }
 
+.lobby-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.lobby-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    position: absolute;
+    right: 10px;
+}
+
+.lobby-participants {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.view-participants {
+    font-size: 16px;
+    color: #0057B7;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.view-participants:hover {
+    text-decoration: underline;
+}
+
+.participants-list {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 5px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    z-index: 1000;
+    max-width: 200px;
+}
+
+.participants-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.participants-list li {
+    margin-bottom: 5px;
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.participants-list li:last-child {
+    border-bottom: none;
+}
+
+
 
 .sidebar {
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 0 5px 5px;
     width: 25%;
 }
 
 .apartment-list, .selected-apartments {
+    margin: 0 5px 5px;
     padding: 10px;
     width: 40%;
     flex-grow: 1;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .filters {
@@ -133,7 +203,7 @@ button:hover, .add-button:hover {
     margin-bottom: 5px;
 }
 
-#selectedList li {
+#flatsAddedList li {
     background-color: #f9f9f9;
     border: 1px solid #ccc;
     padding: 10px;
@@ -192,4 +262,140 @@ button:hover, .add-button:hover {
     color: #fff;
     background-color: #007bff;
     border-color: #007bff;
+}
+
+
+.scrollable-list {
+    max-height: 600px; /* Adjust height as needed */
+    overflow-y: auto;
+    padding: 10px;
+    /*border: 1px solid #ccc;*/
+    /*background-color: #fff;*/
+    /*border-radius: 8px;*/
+    /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);*/
+}
+
+.scrollable-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.scrollable-list li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.scrollable-list li:last-child {
+    margin-bottom: 0;
+}
+
+.add-button, .remove-button {
+    background-color: #0057B7;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+.add-button:hover, .remove-button:hover {
+    background-color: #003399;
+}
+
+.remove-button {
+    background-color: #dc3545;
+}
+
+.remove-button:hover {
+    background-color: #c82333;
+}
+
+.apartment-details {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.apartment-link {
+    display: block;
+    font-weight: bold;
+    color: #0057B7;
+    text-decoration: none;
+}
+
+.apartment-link:hover {
+    text-decoration: underline;
+}
+
+.apartment-price, .apartment-area {
+    display: block;
+    margin-top: 5px;
+    color: #333;
+}
+
+/* Custom scrollbar styles */
+.scrollable-list::-webkit-scrollbar {
+    width: 12px;
+}
+
+.scrollable-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+    border: 3px solid #f1f1f1;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+
+.average-rating {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+}
+
+.rateForm {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.rateForm label {
+    margin-right: 10px;
+}
+
+.rateForm input {
+    width: 50px;
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.rate-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.rate-button:hover {
+    background-color: #218838;
 }

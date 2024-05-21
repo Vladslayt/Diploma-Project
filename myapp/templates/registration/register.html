@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/register.css' %}?v=1.0">
+    <link rel="stylesheet" href="{% static 'css/register.css' %}?v=1.2">
 {% endblock %}
 
 {% block content %}
@@ -26,6 +26,10 @@
         <button type="submit" class="auth-button">Зарегистрироваться</button>
     </form>
     
+    <div class="policy-prompt">
+        <p>Регистрируясь, вы соглашаетесь с нашей <a href="{% url 'privacy_policy' %}" target="_blank">Политикой конфиденциальности</a>.</p>
+    </div>
+
     <div class="login-prompt">
         <p>Уже есть аккаунт?</p>
         <a href="{% url 'login' %}" class="auth-toggle-button">Войти</a>

@@ -1,16 +1,27 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
 from .models import Lobby, Profile
 
 
 class LobbyForm(forms.ModelForm):
+    password = forms.CharField(required=False, widget=forms.PasswordInput(), label="Пароль")
+
     class Meta:
         model = Lobby
         fields = ['name', 'max_people', 'is_private', 'lobby_type']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        is_private = cleaned_data.get("is_private")
+        password = cleaned_data.get("password")
+
+        if is_private and not password:
+            self.add_error('password', "Приватное лобби должно иметь пароль.")
+
+        return cleaned_data
 
 
 class RegisterForm(UserCreationForm):
