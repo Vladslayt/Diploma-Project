@@ -5,8 +5,8 @@
 
 {% block title %}MAI Apartment Selector{% endblock %}
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/lobby.css' %}?v=1.21">
-    <script src="{% static 'js/lobby.js' %}?v=1.15" defer></script>
+    <link rel="stylesheet" href="{% static 'css/lobby.css' %}?v=1.23">
+    <script src="{% static 'js/lobby.js' %}?v=1.17" defer></script>
 {% endblock %}
 
 {% block title-lobby %}
@@ -59,6 +59,27 @@
                     <option value="">Выберите станцию метро</option>
                     <option value="м. Бабушкинская" {% if underground == "м. Бабушкинская" %}selected{% endif %}>Бабушкинская</option>
                 </select>
+            
+                <label for="price_per_m2_coeff">Коэффициент цены за м²:</label>
+                <input type="number" id="price_per_m2_coeff" name="price_per_m2_coeff" value="{{ price_per_m2_coeff }}" placeholder="1-5" min="1" max="5" autocomplete="off" class="coefficient">
+                
+                <label for="common_ecology_coeff">Коэффициент общей экологии:</label>
+                <input type="number" id="common_ecology_coeff" name="common_ecology_coeff" value="{{ common_ecology_coeff }}" placeholder="1-5" min="1" max="5" autocomplete="off" class="coefficient">
+                
+                <label for="population_density_coeff">Коэффициент плотности населения:</label>
+                <input type="number" id="population_density_coeff" name="population_density_coeff" value="{{ population_density_coeff }}" placeholder="1-5" min="1" max="5" autocomplete="off" class="coefficient">
+                
+                <label for="green_spaces_coeff">Коэффициент зелёных зон:</label>
+                <input type="number" id="green_spaces_coeff" name="green_spaces_coeff" value="{{ green_spaces_coeff }}" placeholder="1-5" min="1" max="5" autocomplete="off" class="coefficient">
+                
+                <label for="negative_impact_coeff">Коэффициент негативного воздействия:</label>
+                <input type="number" id="negative_impact_coeff" name="negative_impact_coeff" value="{{ negative_impact_coeff }}" placeholder="1-5" min="1" max="5" autocomplete="off" class="coefficient">
+                
+                <label for="phone_nets_coeff">Коэффициент телефонных сетей:</label>
+                <input type="number" id="phone_nets_coeff" name="phone_nets_coeff" value="{{ phone_nets_coeff }}" placeholder="1-5" min="1" max="5" autocomplete="off" class="coefficient">
+                
+                <label for="crime_coeff">Коэффициент преступности:</label>
+                <input type="number" id="crime_coeff" name="crime_coeff" value="{{ crime_coeff }}" placeholder="1-5" min="1" max="5" autocomplete="off" class="coefficient">
 
                 <button type="submit">Применить фильтры</button>
             </form>

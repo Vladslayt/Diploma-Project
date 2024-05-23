@@ -103,6 +103,14 @@ def lobby_detail_view(request, lobby_id):
     district = request.POST.get('district')
     underground = request.POST.get('underground', '')
 
+    price_per_m2_coeff = request.POST.get('price_per_m2_coeff')
+    common_ecology_coeff = request.POST.get('common_ecology_coeff')
+    population_density_coeff = request.POST.get('population_density_coeff')
+    green_spaces_coeff = request.POST.get('green_spaces_coeff')
+    negative_impact_coeff = request.POST.get('negative_impact_coeff')
+    phone_nets_coeff = request.POST.get('phone_nets_coeff')
+    crime_coeff = request.POST.get('crime_coeff')
+
     if request.method == 'POST':
         if 'add_flat' in request.POST:
             link = request.POST.get('flat_link')
@@ -144,6 +152,21 @@ def lobby_detail_view(request, lobby_id):
                 params['district'] = district
             if underground:
                 params['underground'] = underground
+            if price_per_m2_coeff:
+                params['price_per_m2_coeff'] = price_per_m2_coeff
+            if common_ecology_coeff:
+                params['common_ecology_coeff'] = common_ecology_coeff
+            if population_density_coeff:
+                params['population_density_coeff'] = population_density_coeff
+            if green_spaces_coeff:
+                params['green_spaces_coeff'] = green_spaces_coeff
+            if negative_impact_coeff:
+                params['negative_impact_coeff'] = negative_impact_coeff
+            if phone_nets_coeff:
+                params['phone_nets_coeff'] = phone_nets_coeff
+            if crime_coeff:
+                params['crime_coeff'] = crime_coeff
+
 
             response = requests.get(url, headers=headers, params=params)
             if response.status_code == 200:
@@ -176,6 +199,13 @@ def lobby_detail_view(request, lobby_id):
         'region': region,
         'district': district,
         'underground': underground,
+        'price_per_m2_coeff': price_per_m2_coeff,
+        'common_ecology_coeff': common_ecology_coeff,
+        'population_density_coeff': population_density_coeff,
+        'green_spaces_coeff': green_spaces_coeff,
+        'negative_impact_coeff': negative_impact_coeff,
+        'phone_nets_coeff': phone_nets_coeff,
+        'crime_coeff': crime_coeff,
         'show_modal': show_modal,
         'modal_message': modal_message,
     })

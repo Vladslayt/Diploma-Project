@@ -16,6 +16,25 @@ class Lobby(models.Model):
         return self.name
 
 
+# class Flat(models.Model):
+#     link = models.CharField(primary_key=True, max_length=512)
+#     total_meters = models.FloatField(default=0.0)
+#     region = models.CharField(max_length=256, default="")
+#     district = models.CharField(max_length=256, default="")
+#     street = models.CharField(max_length=256, default="")
+#     underground = models.CharField(max_length=256, default="")
+#     house = models.CharField(max_length=256, default="")
+#     rooms = models.IntegerField(default=0)
+
+#     price_per_m2_coeff = models.IntegerField(default=0)
+#     common_ecology_coeff = models.IntegerField(default=0)
+#     population_density_coeff = models.IntegerField(default=0)
+#     green_spaces_coeff = models.IntegerField(default=0)
+#     negative_impact_coeff = models.IntegerField(default=0)
+#     phone_nets_coeff = models.IntegerField(default=0)
+#     crime_coeff = models.FloatField(default=0.0)
+#     lobby = models.ForeignKey(Lobby, related_name='flats', on_delete=models.CASCADE, null=True)
+
 class Flat(models.Model):
     link = models.CharField(primary_key=True, max_length=512)
     price_per_month = models.IntegerField(default=0)

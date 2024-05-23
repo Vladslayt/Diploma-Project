@@ -1,4 +1,23 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const coefficientInputs = document.querySelectorAll('input[type="number"].coefficient');
+
+    coefficientInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.value > 5) {
+                this.value = 5;
+            } else if (this.value < 1) {
+                this.value = 1;
+            }
+        });
+
+        input.addEventListener('blur', function() {
+            if (this.value === '') {
+                this.value = 1;
+            }
+        });
+    });
+
+
     const modal = document.getElementById("myModal");
     const span = document.querySelector(".close");
 

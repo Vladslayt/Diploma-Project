@@ -70,7 +70,7 @@ header {
 
 main {
     display: flex;
-    padding: 20px;
+    padding: 10px;
     background-color: #f9f9f9;
 }
 
@@ -82,6 +82,8 @@ footer {
     bottom: 0;
     width: 100%;
     text-align: center;
+    font-size: 10px; /* Decreased font size by 1 */
+
 }
 
 .footer-content p {

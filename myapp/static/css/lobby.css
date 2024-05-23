@@ -98,11 +98,16 @@
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     border-radius: 5px;
 }
+.filters h2 {
+    margin-top: 5px;
+    font-size: 20px; /* Decreased font size by 1 */
+}
 
 .filters label, .filters input, .filters select, .filters button {
     display: block;
     width: 90%;
     margin-bottom: 10px;
+    font-size: 11px; /* Decreased font size by 1 */
 }
 
 button, .add-button {
