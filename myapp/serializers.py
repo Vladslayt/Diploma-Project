@@ -2,10 +2,11 @@ from rest_framework import serializers
 from .models import Lobby, Flat
 
 
+# serializers.py
 class LobbySerializer(serializers.ModelSerializer):
     class Meta:
         model = Lobby
-        fields = ['id', 'name', 'price']
+        fields = ['id', 'name', 'max_people', 'is_private', 'lobby_type', 'description', 'owner']
 
 
 class FlatSerializer(serializers.ModelSerializer):

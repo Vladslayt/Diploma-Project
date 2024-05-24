@@ -1,0 +1,67 @@
+/* static/css/profile.css */
+body, html {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+}
+
+.profile-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+.profile-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.profile-container label {
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+}
+
+.profile-container input,
+.profile-container select,
+.profile-container textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 90%;
+}
+
+.profile-container textarea {
+    resize: vertical;
+}
+
+.save-button {
+    background-color: #0057B7;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    border-radius: 4px;
+}
+
+.save-button:hover {
+    background-color: #003399;
+}

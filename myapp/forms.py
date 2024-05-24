@@ -6,12 +6,13 @@ from django.core.exceptions import ValidationError
 from .models import Lobby, Profile
 
 
+# forms.py
 class LobbyForm(forms.ModelForm):
     password = forms.CharField(required=False, widget=forms.PasswordInput(), label="Пароль")
 
     class Meta:
         model = Lobby
-        fields = ['name', 'max_people', 'is_private', 'lobby_type']
+        fields = ['name', 'max_people', 'is_private', 'lobby_type', 'description']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -59,4 +60,11 @@ class RegisterForm(UserCreationForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['bio', 'location', 'birth_date']
+        fields = [
+            'email', 'first_name', 'last_name', 'phone', 'bio', 'birth_date',
+            'address', 'city', 'country', 'postal_code', 'gender', 'profile_picture'
+        ]
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows': 4}),
+            'birth_date': forms.DateInput(attrs={'type': 'date'}),
+        }

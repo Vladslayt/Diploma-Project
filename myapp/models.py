@@ -1,13 +1,15 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
+from django.core.validators import MaxValueValidator
 from django.db import models
 
 
 class Lobby(models.Model):
-    name = models.CharField(max_length=100, default='Новое Лобби')
-    max_people = models.IntegerField(default=4)
+    name = models.CharField(max_length=60, default='Новое Лобби')
+    max_people = models.IntegerField(default=4, validators=[MaxValueValidator(10)])
     is_private = models.BooleanField(default=False)
-    password = models.CharField(max_length=255, blank=True, null=True, default='')
-    lobby_type = models.CharField(max_length=10, choices=[('male', 'Мужское'), ('female', 'Женское')], default='male')
+    password = models.CharField(max_length=30, blank=True, null=True, default='')
+    lobby_type = models.CharField(max_length=10, choices=[('male', 'Мужское'), ('female', 'Женское'), ('none', 'Смешанное')], default='male')
+    description = models.TextField(blank=True, null=True, max_length=250, default='')
     created_at = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, related_name='owned_lobbies', on_delete=models.CASCADE)
     members = models.ManyToManyField(User, related_name='joined_lobbies', blank=True)
@@ -15,25 +17,6 @@ class Lobby(models.Model):
     def __str__(self):
         return self.name
 
-
-# class Flat(models.Model):
-#     link = models.CharField(primary_key=True, max_length=512)
-#     total_meters = models.FloatField(default=0.0)
-#     region = models.CharField(max_length=256, default="")
-#     district = models.CharField(max_length=256, default="")
-#     street = models.CharField(max_length=256, default="")
-#     underground = models.CharField(max_length=256, default="")
-#     house = models.CharField(max_length=256, default="")
-#     rooms = models.IntegerField(default=0)
-
-#     price_per_m2_coeff = models.IntegerField(default=0)
-#     common_ecology_coeff = models.IntegerField(default=0)
-#     population_density_coeff = models.IntegerField(default=0)
-#     green_spaces_coeff = models.IntegerField(default=0)
-#     negative_impact_coeff = models.IntegerField(default=0)
-#     phone_nets_coeff = models.IntegerField(default=0)
-#     crime_coeff = models.FloatField(default=0.0)
-#     lobby = models.ForeignKey(Lobby, related_name='flats', on_delete=models.CASCADE, null=True)
 
 class Flat(models.Model):
     link = models.CharField(primary_key=True, max_length=512)
@@ -57,11 +40,30 @@ class Rating(models.Model):
         return f"{self.user.username} rated {self.flat} as {self.score}"
 
 
+# class Profile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     bio = models.TextField(max_length=500, blank=True)
+#     birth_date = models.DateField(null=True, blank=True)
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(max_length=500, blank=True)
-    location = models.CharField(max_length=30, blank=True)
-    birth_date = models.DateField(null=True, blank=True)
+    last_name = models.CharField(max_length=120, default='unknown')
+    first_name = models.CharField(max_length=120, default='unknown')
+    email = models.EmailField(unique=True, default='<EMAIL>')
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+    birth_date = models.DateField(blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    postal_code = models.CharField(max_length=20, blank=True, null=True)
+    gender = models.CharField(max_length=10, choices=[('male', 'Мужской'), ('female', 'Женский')], blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.user.username} Profile'
+
 
 # class Flat(models.Model):
 #     link = models.CharField(max_length=512, primary_key=True)

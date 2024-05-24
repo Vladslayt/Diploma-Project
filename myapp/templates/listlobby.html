@@ -1,12 +1,13 @@
+<!-- listlobby.html -->
 {% extends "base_generic.html" %}
 {% load static %}
 
 {% block title %}MAI Lobby System{% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/listlobby.css' %}?v=2.1">
+    <link rel="stylesheet" href="{% static 'css/listlobby.css' %}?v=2.7">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="{% static 'js/listlobby.js' %}?v=2.3" defer></script>
+    <script src="{% static 'js/listlobby.js' %}?v=2.4" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -17,11 +18,11 @@
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="id_name">Название лобби:</label>
-                    <input type="text" id="id_name" name="name" placeholder="Введите название лобби" required>
+                    <input type="text" id="id_name" name="name" placeholder="Введите название лобби" maxlength="60" required>
                 </div>
                 <div class="form-group">
                     <label for="id_max_people">Максимальное количество участников:</label>
-                    <input type="number" id="id_max_people" name="max_people" placeholder="Введите максимальное количество участников" required>
+                    <input type="number" id="id_max_people" name="max_people" placeholder="Введите максимальное количество участников" min="1" max="10" required>
                 </div>
                 <div class="form-group">
                     <label for="id_is_private">Приватное лобби:</label>
@@ -34,9 +35,14 @@
                 <div class="form-group">
                     <label for="id_lobby_type">Тип лобби:</label>
                     <select id="id_lobby_type" name="lobby_type">
-                        <option value="type1">Женское</option>
-                        <option value="type2">Мужское</option>
+                        <option value="male">Мужское</option>
+                        <option value="female">Женское</option>
+                        <option value="none">Смешанное</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="id_description">Описание:</label>
+                    <textarea id="id_description" name="description" placeholder="Введите описание лобби" maxlength=250></textarea>
                 </div>
                 <input type="hidden" name="create_lobby" value="1">
                 <button type="submit" id="createLobby">Создать лобби</button>
@@ -56,6 +62,8 @@
                         <div class="lobby-people">Количество человек уже в лобби: {{ lobby.members.count }}</div>
                         <div class="lobby-private">Приватное: {{ lobby.is_private|yesno:"Да,Нет" }}</div>
                         <div class="lobby-type">Тип: {{ lobby.get_lobby_type_display }}</div>
+                        <div class="lobby-description">Описание: {{ lobby.description }}</div>
+                        <div class="lobby-owner">Создатель: {{ lobby.owner.username }}</div>
                     </div>
                     <div class="lobby-actions">
                         <form method="post" class="addLobbyForm" action="">
@@ -89,6 +97,8 @@
                         <div class="lobby-people">Количество человек: {{ lobby.max_people }}</div>
                         <div class="lobby-private">Приватное: {{ lobby.is_private|yesno:"Да,Нет" }}</div>
                         <div class="lobby-type">Тип: {{ lobby.get_lobby_type_display }}</div>
+                        <div class="lobby-description">Описание: {{ lobby.description }}</div>
+                        <div class="lobby-owner">Создатель: {{ lobby.owner.username }}</div>
                     </div>
                     <div class="lobby-actions">
                         <a href="{% url 'lobby-detail' lobby.id %}" class="join-button">Войти</a>
@@ -110,7 +120,7 @@
     <!-- Password Modal -->
     <div id="joinModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeAllModals()">&times;</span>
+            <span class="close" onclick="closeJoinModal()">&times;</span>
             <form method="post" action="{% url 'list-lobby' %}">
                 {% csrf_token %}
                 <input type="hidden" name="lobby_id" id="modal_lobby_id">

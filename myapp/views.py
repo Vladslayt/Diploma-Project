@@ -66,6 +66,7 @@ def list_lobby_view(request):
             is_private = 'is_private' in request.POST
             password = request.POST.get('password') if is_private else None
             lobby_type = request.POST.get('lobby_type')
+            description = request.POST.get('description')
 
             if not name or not max_people or (is_private and not password):
                 messages.error(request, 'Заполните все обязательные поля.')
@@ -77,7 +78,8 @@ def list_lobby_view(request):
                 is_private=is_private,
                 password=password,
                 lobby_type=lobby_type,
-                owner=request.user
+                owner=request.user,
+                description=description,
             )
             new_lobby.members.add(request.user)
             return redirect('list-lobby')
@@ -123,12 +125,12 @@ def lobby_detail_view(request, lobby_id):
                 return redirect('lobby-detail', lobby_id=lobby_id)
         elif 'remove_flat' in request.POST:
             flat_link = request.POST.get('flat_link')
-            flat = get_object_or_404(Flat, id=flat_link)
+            flat = get_object_or_404(Flat, link=flat_link)
             flat.delete()
         elif 'rate_flat' in request.POST:
             flat_link = request.POST.get('flat_link')
             score = int(request.POST.get('score'))
-            flat = get_object_or_404(Flat, id=flat_link)
+            flat = get_object_or_404(Flat, link=flat_link)
             rating, created = Rating.objects.update_or_create(
                 flat=flat, user=request.user, defaults={'score': score}
             )
@@ -213,14 +215,17 @@ def lobby_detail_view(request, lobby_id):
 
 @login_required
 def profile_view(request):
+    # Ensure the profile exists
     profile, created = Profile.objects.get_or_create(user=request.user)
+
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=profile)
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             return redirect('profile')
     else:
         form = ProfileForm(instance=profile)
+
     return render(request, 'profile.html', {'form': form})
 
 

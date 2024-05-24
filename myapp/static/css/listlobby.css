@@ -54,7 +54,14 @@ body, html {
     flex-grow: 1;
 }
 
-.lobby-name, .lobby-people, .lobby-private, .lobby-type {
+.lobby-name {
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 5px;
+    color: #0057B7;
+}
+
+.lobby-people, .lobby-private, .lobby-type, .lobby-description, .lobby-owner {
     margin-bottom: 5px;
 }
 
@@ -89,7 +96,7 @@ body, html {
 /* Стили для формы создания лобби */
 .create-lobby-form {
     width: 100%;
-    padding: 20px;
+    padding: 10px;
     background-color: #ffffff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
@@ -116,11 +123,14 @@ body, html {
     color: #333;
 }
 
-.create-lobby-form input, .create-lobby-form select {
+.create-lobby-form input, .create-lobby-form select, .create-lobby-form textarea {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
+}
+.create-lobby-form textarea {
+    max-width: 100%;
 }
 
 #createLobby {
