@@ -42,13 +42,26 @@ def list_lobby_view(request):
         if 'join_lobby' in request.POST:
             lobby_id = request.POST.get('lobby_id')
             lobby = get_object_or_404(Lobby, id=lobby_id)
+            if lobby.members.filter(id=request.user.id).exists():
+                return redirect('lobby-detail', lobby_id=lobby_id)
+
+            if lobby.members.count() >= lobby.max_people:
+                return render(request, 'listlobby.html', {
+                    'all_lobbies': all_lobbies,
+                    'user_lobbies': user_lobbies,
+                    'form': form,
+                    'show_modal': True,
+                    'modal_message': 'Лобби уже переполнено!'
+                })
 
             if lobby.is_private:
                 password = request.POST.get('password')
                 if lobby.password == password:
                     if not lobby.members.filter(id=request.user.id).exists():
                         lobby.members.add(request.user)
-                    return redirect('lobby-detail', lobby_id=lobby_id)
+                        return redirect('lobby-detail', lobby_id=lobby_id)
+                    else:
+                        return redirect('lobby-detail', lobby_id=lobby_id)
                 else:
                     return render(request, 'listlobby.html', {
                         'all_lobbies': all_lobbies,
@@ -58,20 +71,9 @@ def list_lobby_view(request):
                         'modal_message': 'Неверный пароль!'
                     })
 
-            if lobby.members.filter(id=request.user.id).exists():
+            elif not lobby.members.filter(id=request.user.id).exists():
+                lobby.members.add(request.user)
                 return redirect('lobby-detail', lobby_id=lobby_id)
-            elif lobby.members.count() < lobby.max_people:
-                if not lobby.members.filter(id=request.user.id).exists():
-                    lobby.members.add(request.user)
-                    return redirect('lobby-detail', lobby_id=lobby_id)
-            else:
-                return render(request, 'listlobby.html', {
-                    'all_lobbies': all_lobbies,
-                    'user_lobbies': user_lobbies,
-                    'form': form,
-                    'show_modal': True,
-                    'modal_message': 'Лобби уже переполнено!'
-                })
 
         elif 'delete_lobby' in request.POST:
             lobby_id = request.POST.get('lobby_id')
@@ -131,6 +133,20 @@ def lobby_detail_view(request, lobby_id):
     negative_impact_coeff = request.POST.get('negative_impact_coeff')
     phone_nets_coeff = request.POST.get('phone_nets_coeff')
     crime_coeff = request.POST.get('crime_coeff')
+
+    # фильтры flats_all
+    # if filter_name:
+    #     all_lobbies = all_lobbies.filter(name__icontains=filter_name)
+    # if filter_max_people:
+    #     all_lobbies = all_lobbies.filter(max_people=filter_max_people)
+    # if filter_is_private:
+    #     if filter_is_private == "true":
+    #         all_lobbies = all_lobbies.filter(is_private=True)
+    #     elif filter_is_private == "false":
+    #         all_lobbies = all_lobbies.filter(is_private=False)
+    # if filter_lobby_type:
+    #     all_lobbies = all_lobbies.filter(lobby_type=filter_lobby_type)
+    # фильтры flats
 
     if request.method == 'POST':
         if 'add_flat' in request.POST:
