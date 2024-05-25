@@ -4,13 +4,16 @@
     align-items: center;
     position: relative;
     padding: 10px;
-    box-sizing: border-box;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 0 auto;
 }
 
 .lobby-title {
-    font-size: 24px;
+    font-size: 30px;
     font-weight: bold;
+    color: #333;
     margin: 0;
     flex-grow: 1;
     text-align: center;
@@ -22,6 +25,7 @@
     align-items: flex-end;
     position: absolute;
     right: 10px;
+    margin-right: 3%;
 }
 
 .lobby-participants {
@@ -69,6 +73,15 @@
 
 .participants-list li:last-child {
     border-bottom: none;
+}
+
+.participants-list li a {
+    color: #0057B7;
+    text-decoration: none;
+}
+
+.participants-list li a:hover {
+    text-decoration: underline;
 }
 
 

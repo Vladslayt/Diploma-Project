@@ -17,7 +17,7 @@ Including another URLconf
 from django.urls import path, include
 from . import views
 from rest_framework.routers import DefaultRouter
-from .views import LobbyViewSet, FlatViewSet, CustomLoginView, profile_view
+from .views import LobbyViewSet, FlatViewSet, CustomLoginView, profile_view, UserProfileView
 
 router = DefaultRouter()
 router.register(r'lobby', LobbyViewSet)
@@ -31,5 +31,6 @@ urlpatterns = [
     path('login/', CustomLoginView.as_view(), name='login'),
     path('accounts/register/', views.register_view, name='register'),
     path('profile/', profile_view, name='profile'),
+    path('profile/<int:pk>/', UserProfileView.as_view(), name='user-profile'),
     path('privacy_policy/', views.privacy_policy_view, name='privacy_policy'),
 ]

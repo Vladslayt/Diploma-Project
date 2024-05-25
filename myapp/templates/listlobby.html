@@ -1,13 +1,12 @@
-<!-- listlobby.html -->
 {% extends "base_generic.html" %}
 {% load static %}
 
 {% block title %}MAI Lobby System{% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/listlobby.css' %}?v=2.7">
+    <link rel="stylesheet" href="{% static 'css/listlobby.css' %}?v=3.14">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="{% static 'js/listlobby.js' %}?v=2.4" defer></script>
+    <script src="{% static 'js/listlobby.js' %}?v=2.52" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -24,7 +23,7 @@
                     <label for="id_max_people">Максимальное количество участников:</label>
                     <input type="number" id="id_max_people" name="max_people" placeholder="Введите максимальное количество участников" min="1" max="10" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group-password">
                     <label for="id_is_private">Приватное лобби:</label>
                     <input type="checkbox" id="id_is_private" name="is_private" onchange="document.getElementById('passwordField').style.display = this.checked ? 'block' : 'none';">
                 </div>
@@ -42,7 +41,7 @@
                 </div>
                 <div class="form-group">
                     <label for="id_description">Описание:</label>
-                    <textarea id="id_description" name="description" placeholder="Введите описание лобби" maxlength=250></textarea>
+                    <textarea id="id_description" name="description" placeholder="Введите описание лобби" maxlength="250"></textarea>
                 </div>
                 <input type="hidden" name="create_lobby" value="1">
                 <button type="submit" id="createLobby">Создать лобби</button>
@@ -50,7 +49,40 @@
         </div>
     </div>
     <div class="list-sidebar">
+        <div class="header-lobby">
         <h2>Лобби</h2>
+            <button class="filter-button" onclick="toggleFilterMenu()">Фильтры</button>
+        </div>
+        <div class="filter-menu" id="filterMenu">
+            <form method="get" action="{% url 'list-lobby' %}">
+                <div class="form-group">
+                    <label for="filter_name">Название:</label>
+                    <input type="text" id="filter_name" name="filter_name" placeholder="Введите название лобби">
+                </div>
+                <div class="form-group">
+                    <label for="filter_max_people">Максимальное количество участников:</label>
+                    <input type="number" id="filter_max_people" name="filter_max_people" placeholder="Введите максимальное количество участников">
+                </div>
+                <div class="form-group">
+                    <label for="filter_is_private">Приватное:</label>
+                    <select id="filter_is_private" name="filter_is_private">
+                        <option value="">Любое</option>
+                        <option value="true">Да</option>
+                        <option value="false">Нет</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filter_lobby_type">Тип лобби:</label>
+                    <select id="filter_lobby_type" name="filter_lobby_type">
+                        <option value="">Любой</option>
+                        <option value="male">Мужское</option>
+                        <option value="female">Женское</option>
+                        <option value="none">Смешанное</option>
+                    </select>
+                </div>
+                <button type="submit" class="apply-filter-button">Применить</button>
+            </form>
+        </div>
         <div class="lobby-list scrollable-list" id="allLobbies">
             {% if all_lobbies %}
             <ul>
@@ -84,9 +116,10 @@
             {% endif %}
         </div>
     </div>
-
     <div class="list-sidebar">
-        <h2>Лобби, в которых вы состоите</h2>
+        <div class="header-lobby">
+            <h2>Лобби, в которых вы состоите</h2>
+        </div>
         <div class="lobby-list scrollable-list" id="userLobbies">
             {% if user_lobbies %}
             <ul>
@@ -133,5 +166,4 @@
             </form>
         </div>
     </div>
-
 {% endblock %}

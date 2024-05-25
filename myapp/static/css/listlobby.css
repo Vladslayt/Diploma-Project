@@ -22,6 +22,7 @@ body, html {
     margin: 9px;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
 }
 
 .lobby-list {
@@ -30,8 +31,83 @@ body, html {
 }
 
 /* Заголовки списков лобби */
+.header-lobby {
+    padding-left: 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .lobby-list h2 {
     margin-top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filter-button {
+    background-color: #0057B7;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 4px;
+    margin-right: 5%;
+}
+
+.filter-button:hover {
+    background-color: #003399;
+}
+
+.filter-menu {
+    display: none;
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 1000;
+    right: 0;
+    margin-right: 5%;
+}
+
+.filter-menu form {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-menu .form-group {
+    margin-bottom: 15px;
+}
+
+.filter-menu label {
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+}
+
+.filter-menu input, .filter-menu select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.apply-filter-button {
+    background-color: #0057B7;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 4px;
+}
+
+.apply-filter-button:hover {
+    background-color: #003399;
 }
 
 /* Стили для элементов списка лобби */
@@ -42,8 +118,9 @@ body, html {
     padding: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     border-radius: 4px;
     flex-wrap: wrap;
 }
@@ -68,7 +145,8 @@ body, html {
 /* Стили для действий с лобби */
 .lobby-actions {
     display: flex;
-    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
 }
 
 .join-button, .remove-button {
@@ -115,6 +193,9 @@ body, html {
 
 .create-lobby-form .form-group {
     margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .create-lobby-form label {
@@ -128,7 +209,15 @@ body, html {
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
 }
+
+.create-lobby-form #id_is_private {
+    width: auto;
+    margin-bottom: 10px;
+}
+
 .create-lobby-form textarea {
     max-width: 100%;
 }

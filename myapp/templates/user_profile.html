@@ -1,0 +1,58 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/user_profile.css' %}">
+{% endblock %}
+
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h2>Профиль пользователя: {{ profile.user.username }}</h2>
+    </div>
+    <div class="profile-details">
+        <div class="profile-row">
+            <span class="profile-label">Имя:</span>
+            <span class="profile-value">{{ profile.first_name }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="profile-label">Фамилия:</span>
+            <span class="profile-value">{{ profile.last_name }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="profile-label">Электронная почта:</span>
+            <span class="profile-value">{{ profile.email }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="profile-label">Телефон:</span>
+            <span class="profile-value">{{ profile.phone }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="profile-label">Дата рождения:</span>
+            <span class="profile-value">{{ profile.birth_date }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="profile-label">О себе:</span>
+            <span class="profile-value">{{ profile.bio }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="profile-label">Город:</span>
+            <span class="profile-value">{{ profile.city }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="profile-label">Страна:</span>
+            <span class="profile-value">{{ profile.country }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="profile-label">Почтовый индекс:</span>
+            <span class="profile-value">{{ profile.postal_code }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="profile-label">Пол:</span>
+            <span class="profile-value">{{ profile.get_gender_display }}</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

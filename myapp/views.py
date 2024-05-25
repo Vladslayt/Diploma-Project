@@ -4,6 +4,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.views import View
+from .models import User
 from rest_framework import viewsets
 from .forms import LobbyForm, ProfileForm
 from .models import Lobby, Flat, Profile, Rating
@@ -18,6 +20,23 @@ def list_lobby_view(request):
     all_lobbies = Lobby.objects.all()
     user_lobbies = request.user.joined_lobbies.all()
     form = LobbyForm(request.POST or None)
+
+    filter_name = request.GET.get('filter_name')
+    filter_max_people = request.GET.get('filter_max_people')
+    filter_is_private = request.GET.get('filter_is_private')
+    filter_lobby_type = request.GET.get('filter_lobby_type')
+
+    if filter_name:
+        all_lobbies = all_lobbies.filter(name__icontains=filter_name)
+    if filter_max_people:
+        all_lobbies = all_lobbies.filter(max_people=filter_max_people)
+    if filter_is_private:
+        if filter_is_private == "true":
+            all_lobbies = all_lobbies.filter(is_private=True)
+        elif filter_is_private == "false":
+            all_lobbies = all_lobbies.filter(is_private=False)
+    if filter_lobby_type:
+        all_lobbies = all_lobbies.filter(lobby_type=filter_lobby_type)
 
     if request.method == 'POST':
         if 'join_lobby' in request.POST:
@@ -169,7 +188,6 @@ def lobby_detail_view(request, lobby_id):
             if crime_coeff:
                 params['crime_coeff'] = crime_coeff
 
-
             response = requests.get(url, headers=headers, params=params)
             if response.status_code == 200:
                 flats_all = response.json()
@@ -217,7 +235,7 @@ def lobby_detail_view(request, lobby_id):
 def profile_view(request):
     # Ensure the profile exists
     profile, created = Profile.objects.get_or_create(user=request.user)
-
+    user = request.user
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
@@ -226,7 +244,13 @@ def profile_view(request):
     else:
         form = ProfileForm(instance=profile)
 
-    return render(request, 'profile.html', {'form': form})
+    return render(request, 'profile.html', {'user': user, 'form': form})
+
+
+class UserProfileView(View):
+    def get(self, request, pk):
+        profile = get_object_or_404(Profile, user_id=pk)
+        return render(request, 'user_profile.html', {'profile': profile})
 
 
 def privacy_policy_view(request):

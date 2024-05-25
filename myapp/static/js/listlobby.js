@@ -115,3 +115,9 @@ function submitJoinLobbyForm(lobbyId) {
     document.body.appendChild(form);
     form.submit();
 }
+
+// Toggle filter menu
+function toggleFilterMenu() {
+    const filterMenu = document.getElementById("filterMenu");
+    filterMenu.style.display = filterMenu.style.display === "block" ? "none" : "block";
+}
