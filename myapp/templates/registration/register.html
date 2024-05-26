@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/register.css' %}?v=1.2">
+    <link rel="stylesheet" href="{% static 'css/register.css' %}?v=1.5">
 {% endblock %}
 
 {% block content %}
@@ -16,6 +16,10 @@
             {{ form.username }}
         </div>
         <div class="form-group">
+            <label for="id_email">{{ form.email.label }}</label>
+            {{ form.email }}
+        </div>
+        <div class="form-group">
             <label for="id_password1">{{ form.password1.label }}</label>
             {{ form.password1 }}
         </div>
@@ -27,8 +31,9 @@
     </form>
 
     <div class="policy-prompt">
-        <p>Регистрируясь, вы соглашаетесь с нашей <a href="{% url 'privacy_policy' %}" target="_blank">Политикой конфиденциальности</a>.</p>
+        <p>Регистрируясь, вы соглашаетесь с нашей <a href="{% url 'privacy_policy' %}" target="_blank" class="privacy-link">Политикой конфиденциальности</a>.</p>
     </div>
+
 
     <div class="login-prompt">
         <p>Уже есть аккаунт?</p>

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=1.0">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=2">
 {% endblock %}
 
 {% block content %}
@@ -24,14 +24,14 @@
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
         <div class="form-group">
-            <label for="id_username">{{ form.username.label }}</label>
+            <label for="id_username">Имя пользователя</label>
             {{ form.username }}
         </div>
         <div class="form-group">
-            <label for="id_password">{{ form.password.label }}</label>
+            <label for="id_password">Пароль</label>
             {{ form.password }}
         </div>
-        <button type="submit" class="auth-button">Войти</button>
+        <button type="submit" class="login-button">Войти</button>
         <input type="hidden" name="next" value="{{ next }}" />
     </form>
     

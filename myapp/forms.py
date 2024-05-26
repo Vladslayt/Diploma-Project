@@ -6,7 +6,6 @@ from django.core.exceptions import ValidationError
 from .models import Lobby, Profile
 
 
-# forms.py
 class LobbyForm(forms.ModelForm):
     password = forms.CharField(required=False, widget=forms.PasswordInput(), label="Пароль")
 
@@ -54,6 +53,7 @@ class RegisterForm(UserCreationForm):
         self.fields['username'].label = 'Имя пользователя'
         self.fields['password1'].label = 'Пароль'
         self.fields['password2'].label = 'Подтвердите пароль'
+        self.fields['password2'].widget = forms.PasswordInput()  # Изменяем виджет для второго поля пароля
 
     def clean_email(self):
         email = self.cleaned_data.get('email')

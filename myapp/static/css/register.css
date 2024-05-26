@@ -1,18 +1,19 @@
-/* static/css/register.css */
+/* Основные стили для всего документа */
 body, html {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f2f2f2;
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
 }
 
+/* Стили для контейнера регистрации */
 .auth-container {
-    max-width: 400px;
+    max-width: 400px; /* Уменьшена ширина контейнера для компактности */
     margin: 50px auto;
     padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
+    background-color: #ffffff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
 .auth-container h2 {
@@ -20,70 +21,74 @@ body, html {
     margin-bottom: 20px;
 }
 
-.auth-container form {
-    display: flex;
-    flex-direction: column;
-}
-
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 10px; /* Уменьшено расстояние между полями для компактности */
 }
 
-.auth-container label {
+.form-group label {
+    display: block;
     margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
 }
 
-.auth-container input {
-    padding: 10px;
+.form-group input {
+    width: 95%;
+    padding: 8px; /* Уменьшено внутреннее отступление для компактности */
     border: 1px solid #ccc;
     border-radius: 4px;
-}
-
-.auth-button {
-    background-color: #0057B7;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-.auth-button:hover {
-    background-color: #003399;
-}
-
-.policy-prompt {
-    text-align: center;
     font-size: 14px;
-    margin-top: 10px;
 }
 
-.policy-prompt a {
-    color: #0057B7;
-    text-decoration: none;
-}
-
-.policy-prompt a:hover {
-    text-decoration: underline;
-}
-
-.login-prompt {
+.policy-prompt, .login-prompt {
     text-align: center;
     margin-top: 20px;
 }
 
-.auth-toggle-button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    font-size: 16px;
+.policy-prompt p, .login-prompt p {
+    margin: 0;
+}
+
+.policy-prompt p {
+    font-size: 14px;
+    color: #333;
+}
+
+.privacy-link {
+    color: #0057B7;
+    font-weight: bold;
     text-decoration: none;
-    display: inline-block;
+    border-bottom: 1px dotted #0057B7;
+}
+
+.privacy-link:hover {
+    text-decoration: underline;
+    border-bottom: none;
+}
+
+
+.auth-toggle-button {
+    color: #0057B7;
+    text-decoration: none;
 }
 
 .auth-toggle-button:hover {
-    background-color: #218838;
+    text-decoration: underline;
+}
+
+/* Дополнительные стили для кнопки "Войти" */
+.auth-toggle-button {
+    background-color: #f2f2f2;
+    border: 1px solid #0057B7;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.auth-toggle-button:hover {
+    background-color: #0057B7;
+    color: white;
+    text-decoration: none;
 }

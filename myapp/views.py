@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.views import View
 from rest_framework import viewsets
-from .forms import LobbyForm, ProfileForm
+from .forms import LobbyForm, ProfileForm, RegisterForm
 from .models import Lobby, Flat, Profile, Rating
 from .serializers import LobbySerializer, FlatSerializer
 from django.contrib.auth.views import LoginView
@@ -318,7 +318,6 @@ def lobby_detail_view(request, lobby_id):
     })
 
 
-
 @login_required
 def profile_view(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
@@ -357,44 +356,6 @@ class FlatViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FlatSerializer
 
 
-# def add_flat(request):
-#     if request.method == 'POST':
-#         lobby_id = request.POST.get('lobby_id')
-#         lobby = get_object_or_404(Lobby, id=lobby_id)
-#         link = request.POST.get('flat_link')
-#         price = request.POST.get('flat_price')
-#         if not Flat.objects.filter(link=link, lobby=lobby).exists():
-#             Flat.objects.create(link=link, price_per_month=price, lobby=lobby)
-#
-#         page_selected = ""
-#         if request.POST.get("page_selected") is not None:
-#             page_selected = "page_selected=" + request.POST.get("page_selected")
-#
-#         redirect_url = reverse('lobby-detail', args=[lobby.id])
-#         if page_selected != "":
-#             redirect_url = f"{redirect_url}?{page_selected}"
-#
-#         return redirect(redirect_url)
-
-
-# def remove_flat(request):
-#     if request.method == 'POST':
-#         flat_id = request.POST.get('flat_id')
-#         flat = get_object_or_404(Flat, id=flat_id)
-#         lobby_id = flat.lobby.id
-#         flat.delete()
-#
-#         page_selected = ""
-#         if request.POST.get("page_selected") is not None:
-#             page_selected = "page_selected=" + request.POST.get("page_selected")
-#
-#         redirect_url = reverse('lobby-detail', args=[lobby_id])
-#         if page_selected != "":
-#             redirect_url = f"{redirect_url}?{page_selected}"
-#
-#         return redirect(redirect_url)
-
-
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
 
@@ -408,11 +369,11 @@ class CustomLoginView(LoginView):
 
 def register_view(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('list-lobby')
     else:
-        form = UserCreationForm()
+        form = RegisterForm()
     return render(request, 'registration/register.html', {'form': form})
