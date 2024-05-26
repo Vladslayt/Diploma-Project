@@ -25,6 +25,7 @@ router.register(r'Flat', FlatViewSet)
 
 urlpatterns = [
     path('', views.list_lobby_view, name='list-lobby'),
+    path('lobby/edit/<int:lobby_id>/', views.edit_lobby_view, name='edit-lobby'),
     path('lobby/<int:lobby_id>/', views.lobby_detail_view, name='lobby-detail'),
 
     path('accounts/', include('django.contrib.auth.urls')),

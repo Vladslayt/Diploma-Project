@@ -22,6 +22,9 @@ class Flat(models.Model):
     link = models.CharField(primary_key=True, max_length=512)
     price_per_month = models.IntegerField(default=0)
     total_meters = models.FloatField(default=0.0)
+    rooms = models.IntegerField(default=0)
+    district = models.CharField(default='', max_length=100)
+    underground = models.CharField(default='', max_length=100)
     lobby = models.ForeignKey(Lobby, related_name='flats', on_delete=models.CASCADE, null=True)
 
     def __str__(self):

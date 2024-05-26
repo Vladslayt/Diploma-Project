@@ -40,6 +40,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if (localStorage.getItem('scrollPositionSelected') !== null) {
         document.getElementById('selectedList').scrollTop = localStorage.getItem('scrollPositionSelected');
     }
+
+    document.querySelector('.filter-fields-button').addEventListener('click', function() {
+        const fieldsMenu = document.getElementById('fields-menu');
+        if (fieldsMenu.style.display === 'block') {
+            fieldsMenu.style.display = 'none';
+        } else {
+            fieldsMenu.style.display = 'block';
+        }
+    });
 });
 
 function toggleParticipants() {

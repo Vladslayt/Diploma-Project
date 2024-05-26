@@ -5,8 +5,8 @@
 
 {% block title %}MAI Apartment Selector{% endblock %}
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/lobby.css' %}?v=1.24">
-    <script src="{% static 'js/lobby.js' %}?v=1.18" defer></script>
+    <link rel="stylesheet" href="{% static 'css/lobby.css' %}?v=1.30">
+    <script src="{% static 'js/lobby.js' %}?v=1.20" defer></script>
 {% endblock %}
 
 {% block title-lobby %}
@@ -84,22 +84,63 @@
         </div>
     </div>
     <div class="apartment-list">
-        <h2>Квартиры</h2>
+        <div class="header-lobby">
+            <h2>Квартиры</h2>
+            <button class="filter-fields-button">Выбор полей</button>
+            <div id="fields-menu" class="fields-menu">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <label>
+                        <input type="checkbox" name="fields" value="price" {% if 'price' in selected_fields %}checked{% endif %}> Цена
+                    </label>
+                    <label>
+                        <input type="checkbox" name="fields" value="area" {% if 'area' in selected_fields %}checked{% endif %}> Площадь
+                    </label>
+                    <label>
+                        <input type="checkbox" name="fields" value="rooms" {% if 'rooms' in selected_fields %}checked{% endif %}> Комнаты
+                    </label>
+                    <label>
+                        <input type="checkbox" name="fields" value="district" {% if 'district' in selected_fields %}checked{% endif %}> Район
+                    </label>
+                    <label>
+                        <input type="checkbox" name="fields" value="underground" {% if 'underground' in selected_fields %}checked{% endif %}> Метро
+                    </label>
+                    <button type="submit">Применить</button>
+                </form>
+            </div>
+        </div>
         <div id="results" class="scrollable-list">
             <ul id="flatsList">
                 {% if flats_all %}
                     {% for flat in flats_all %}
-                        <li>
+                        <li class="apartment-item">
                             <div class="apartment-details">
                                 <a href="{{ flat.link }}" target="_blank" class="apartment-link">{{ flat.link }}</a>
-                                <span class="apartment-price">Цена: {{ flat.price_per_month }} руб.</span>
-                                <span class="apartment-area">Площадь: {{ flat.total_meters }} м²</span>
+                                {% if 'price' in selected_fields %}
+                                    <span class="apartment-price">Цена: {{ flat.price_per_month }} руб.</span>
+                                {% endif %}
+                                {% if 'area' in selected_fields %}
+                                    <span class="apartment-area">Площадь: {{ flat.total_meters }} м²</span>
+                                {% endif %}
+                                {% if 'rooms' in selected_fields %}
+                                    <span class="apartment-rooms">Комнаты: {{ flat.rooms }}</span>
+                                {% endif %}
+                                {% if 'district' in selected_fields %}
+                                    <span class="apartment-district">Район: {{ flat.district }}</span>
+                                {% endif %}
+                                {% if 'underground' in selected_fields %}
+                                    <span class="apartment-underground">Метро: {{ flat.underground }}</span>
+                                {% endif %}
                             </div>
                             <form class="addForm" method="post" action="{% url 'lobby-detail' lobby.id %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
                                 <input type="hidden" name="flat_link" value="{{ flat.link }}">
                                 <input type="hidden" name="flat_price" value="{{ flat.price_per_month }}">
+                                <input type="hidden" name="flat_total_meters" value="{{ flat.total_meters }}">
+                                <input type="hidden" name="flat_rooms" value="{{ flat.rooms }}">
+                                <input type="hidden" name="flat_district" value="{{ flat.district }}">
+                                <input type="hidden" name="flat_underground" value="{{ flat.underground }}">
                                 <!-- Add hidden inputs for current query parameters -->
                                 {% for key, value in request.GET.items %}
                                     <input type="hidden" name="{{ key }}" value="{{ value }}">
@@ -120,10 +161,24 @@
             <ul id="flatsAddedList">
                 {% if flats %}
                     {% for flat in flats %}
-                        <li>
+                        <li class="apartment-item">
                             <div class="apartment-details">
                                 <a href="{{ flat.link }}" target="_blank" class="apartment-link">{{ flat.link }}</a>
-                                <span class="apartment-price">Цена: {{ flat.price_per_month }} руб.</span>
+                                {% if 'price' in selected_fields %}
+                                    <span class="apartment-price">Цена: {{ flat.price_per_month }} руб.</span>
+                                {% endif %}
+                                {% if 'area' in selected_fields %}
+                                    <span class="apartment-area">Площадь: {{ flat.total_meters }} м²</span>
+                                {% endif %}
+                                {% if 'rooms' in selected_fields %}
+                                    <span class="apartment-rooms">Комнаты: {{ flat.rooms }}</span>
+                                {% endif %}
+                                {% if 'district' in selected_fields %}
+                                    <span class="apartment-district">Район: {{ flat.district }}</span>
+                                {% endif %}
+                                {% if 'underground' in selected_fields %}
+                                    <span class="apartment-underground">Метро: {{ flat.underground }}</span>
+                                {% endif %}
                                 <span class="average-rating">Средняя оценка: 
                                     {% with flat.ratings.all as ratings %}
                                         {% if ratings %}
@@ -134,12 +189,12 @@
                                     {% endwith %}
                                 </span>
                                 <form method="post" class="rateForm" action="{% url 'lobby-detail' lobby.id %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="flat_link" value="{{ flat.link }}">
-                                <label for="score-{{ flat.link }}">Ваша оценка (1-10):</label>
-                                <input id="score-{{ flat.link }}" type="number" name="score" min="1" max="10" required>
-                                <button type="submit" name="rate_flat" class="rate-button">Оценить</button>
-                            </form>
+                                    {% csrf_token %}
+                                    <input type="hidden" name="flat_link" value="{{ flat.link }}">
+                                    <label for="score-{{ flat.link }}">Ваша оценка (1-10):</label>
+                                    <input id="score-{{ flat.link }}" type="number" name="score" min="1" max="10" required>
+                                    <button type="submit" name="rate_flat" class="rate-button">Оценить</button>
+                                </form>
                             </div>
                             <form class="removeForm" method="post" action="{% url 'lobby-detail' lobby.id %}">
                                 {% csrf_token %}

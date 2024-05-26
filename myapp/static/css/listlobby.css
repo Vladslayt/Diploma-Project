@@ -149,7 +149,7 @@ body, html {
     width: 100%;
 }
 
-.join-button, .remove-button {
+.join-button, .remove-button, .edit-button {
     background-color: #0057B7;
     color: white;
     border: none;
@@ -157,9 +157,11 @@ body, html {
     cursor: pointer;
     font-size: 14px;
     margin-left: 10px;
+    border-radius: 4px;
+    text-decoration: none;
 }
 
-.join-button:hover, .remove-button:hover {
+.join-button:hover, .remove-button:hover, .edit-button:hover {
     background-color: #003399;
 }
 
@@ -335,7 +337,7 @@ body, html {
 }
 
 /* Удаление подчеркивания ссылки */
-.lobby-actions a.join-button {
+.lobby-actions a.join-button, .lobby-actions a.edit-button {
     text-decoration: none;
     color: white;
 }

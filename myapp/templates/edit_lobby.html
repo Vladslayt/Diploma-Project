@@ -1,0 +1,70 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block title %}Редактировать Лобби{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/edit_lobby.css' %}?v=1.2">
+    <script src="{% static 'js/edit_lobby.js' %}?v=1.2" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="edit-lobby-container">
+    <h2>Редактировать Лобби</h2>
+    <form id="editLobbyForm" method="post" action="">
+        {% csrf_token %}
+        {% if errors %}
+            <ul class="errorlist">
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <div class="form-group">
+            <label for="id_name">Название лобби:</label>
+            <input type="text" id="id_name" name="name" value="{{ form_data.name|default:lobby.name }}" maxlength="60" required>
+        </div>
+        <div class="form-group">
+            <label for="id_max_people">Максимальное количество участников:</label>
+            <input type="number" id="id_max_people" name="max_people" value="{{ form_data.max_people|default:lobby.max_people }}" min="1" max="10" required>
+        </div>
+        <div class="form-group-password">
+            <label for="id_is_private">Приватное лобби:</label>
+            <input type="checkbox" id="id_is_private" name="is_private" {% if form_data.is_private|default:lobby.is_private %}checked{% endif %} onchange="togglePasswordField()">
+        </div>
+        <div class="form-group" id="passwordField" style="{% if not form_data.is_private|default:lobby.is_private %}display: none;{% endif %}">
+            <label for="id_password">Пароль:</label>
+            <input type="password" id="id_password" name="password" value="{{ form_data.password|default:lobby.password }}" placeholder="Введите пароль для приватного лобби">
+        </div>
+        <div class="form-group">
+            <label for="id_lobby_type">Тип лобби:</label>
+            <select id="id_lobby_type" name="lobby_type">
+                <option value="male" {% if form_data.lobby_type|default:lobby.lobby_type == "male" %}selected{% endif %}>Мужское</option>
+                <option value="female" {% if form_data.lobby_type|default:lobby.lobby_type == "female" %}selected{% endif %}>Женское</option>
+                <option value="none" {% if form_data.lobby_type|default:lobby.lobby_type == "none" %}selected{% endif %}>Смешанное</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="id_description">Описание:</label>
+            <textarea id="id_description" name="description" maxlength="250">{{ form_data.description|default:lobby.description }}</textarea>
+        </div>
+    </form>
+
+    <h3>Участники</h3>
+    <ul class="members-list">
+        {% for member in members %}
+        <li>
+            {{ member.username }}
+            {% if member != lobby.owner %}
+            <form method="post" action="" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="member_id" value="{{ member.id }}">
+                <button type="submit" name="remove_member" class="remove-button">Удалить</button>
+            </form>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    <button type="submit" form="editLobbyForm" class="save-button">Сохранить изменения</button>
+</div>
+{% endblock %}

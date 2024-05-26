@@ -12,7 +12,19 @@ class LobbyForm(forms.ModelForm):
 
     class Meta:
         model = Lobby
-        fields = ['name', 'max_people', 'is_private', 'lobby_type', 'description']
+        fields = ['name', 'max_people', 'is_private', 'lobby_type', 'description', 'password']
+
+    def __init__(self, *args, **kwargs):
+        self.lobby = kwargs.pop('instance', None)
+        super(LobbyForm, self).__init__(*args, **kwargs)
+
+    def clean_max_people(self):
+        max_people = self.cleaned_data.get('max_people')
+        if self.lobby and self.lobby.members.count() > max_people:
+            raise forms.ValidationError(
+                f"Максимальное количество участников не может быть меньше текущего числа участников ({self.lobby.members.count()})"
+            )
+        return max_people
 
     def clean(self):
         cleaned_data = super().clean()

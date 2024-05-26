@@ -1,11 +1,12 @@
 import requests
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
-from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.db.models import Avg
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.views import View
-from .models import User
 from rest_framework import viewsets
 from .forms import LobbyForm, ProfileForm
 from .models import Lobby, Flat, Profile, Rating
@@ -42,6 +43,25 @@ def list_lobby_view(request):
         if 'join_lobby' in request.POST:
             lobby_id = request.POST.get('lobby_id')
             lobby = get_object_or_404(Lobby, id=lobby_id)
+            profile = request.user.profile
+
+            if lobby.lobby_type == 'male' and profile.gender != 'male':
+                return render(request, 'listlobby.html', {
+                    'all_lobbies': all_lobbies,
+                    'user_lobbies': user_lobbies,
+                    'form': form,
+                    'show_modal': True,
+                    'modal_message': 'В это лобби могут заходить только мужчины.'
+                })
+            elif lobby.lobby_type == 'female' and profile.gender != 'female':
+                return render(request, 'listlobby.html', {
+                    'all_lobbies': all_lobbies,
+                    'user_lobbies': user_lobbies,
+                    'form': form,
+                    'show_modal': True,
+                    'modal_message': 'В это лобби могут заходить только женщины.'
+                })
+
             if lobby.members.filter(id=request.user.id).exists():
                 return redirect('lobby-detail', lobby_id=lobby_id)
 
@@ -113,6 +133,65 @@ def list_lobby_view(request):
 
 
 @login_required
+def edit_lobby_view(request, lobby_id):
+    lobby = get_object_or_404(Lobby, id=lobby_id)
+
+    if request.user != lobby.owner:
+        return redirect('lobby-detail', lobby_id=lobby_id)
+
+    if request.method == 'POST':
+        if 'remove_member' in request.POST:
+            member_id = request.POST.get('member_id')
+            member = get_object_or_404(User, id=member_id)
+            if member != request.user:  # Prevent removing oneself
+                lobby.members.remove(member)
+            return redirect('edit-lobby', lobby_id=lobby_id)
+
+        name = request.POST.get('name')
+        max_people = int(request.POST.get('max_people'))
+        is_private = 'is_private' in request.POST
+        password = request.POST.get('password') if is_private else ''
+        lobby_type = request.POST.get('lobby_type')
+        description = request.POST.get('description')
+
+        errors = []
+
+        if max_people < lobby.members.count():
+            errors.append(
+                f"Максимальное количество участников не может быть меньше текущего числа участников ({lobby.members.count()}).")
+
+        if is_private and not password:
+            errors.append("Приватное лобби должно иметь пароль.")
+
+        if errors:
+            return render(request, 'edit_lobby.html', {
+                'lobby': lobby,
+                'members': lobby.members.all(),
+                'errors': errors,
+                'form_data': {
+                    'name': name,
+                    'max_people': max_people,
+                    'is_private': is_private,
+                    'password': password,
+                    'lobby_type': lobby_type,
+                    'description': description,
+                }
+            })
+
+        lobby.name = name
+        lobby.max_people = max_people
+        lobby.is_private = is_private
+        lobby.password = password
+        lobby.lobby_type = lobby_type
+        lobby.description = description
+        lobby.save()
+        return redirect('lobby-detail', lobby_id=lobby_id)
+
+    members = lobby.members.all()
+    return render(request, 'edit_lobby.html', {'lobby': lobby, 'members': members})
+
+
+@login_required
 def lobby_detail_view(request, lobby_id):
     lobby = get_object_or_404(Lobby, id=lobby_id)
     flats = lobby.flats.all()
@@ -134,26 +213,18 @@ def lobby_detail_view(request, lobby_id):
     phone_nets_coeff = request.POST.get('phone_nets_coeff')
     crime_coeff = request.POST.get('crime_coeff')
 
-    # фильтры flats_all
-    # if filter_name:
-    #     all_lobbies = all_lobbies.filter(name__icontains=filter_name)
-    # if filter_max_people:
-    #     all_lobbies = all_lobbies.filter(max_people=filter_max_people)
-    # if filter_is_private:
-    #     if filter_is_private == "true":
-    #         all_lobbies = all_lobbies.filter(is_private=True)
-    #     elif filter_is_private == "false":
-    #         all_lobbies = all_lobbies.filter(is_private=False)
-    # if filter_lobby_type:
-    #     all_lobbies = all_lobbies.filter(lobby_type=filter_lobby_type)
-    # фильтры flats
+    selected_fields = request.session.get('selected_fields', ['price', 'area'])
 
     if request.method == 'POST':
         if 'add_flat' in request.POST:
             link = request.POST.get('flat_link')
             price = request.POST.get('flat_price')
+            total_meters = request.POST.get('flat_total_meters')
+            rooms = request.POST.get('flat_rooms')
+            district = request.POST.get('flat_district')
+            underground = request.POST.get('flat_underground')
             if not Flat.objects.filter(link=link, lobby=lobby).exists():
-                Flat.objects.create(link=link, price_per_month=price, lobby=lobby)
+                Flat.objects.create(link=link, price_per_month=price, total_meters=total_meters, rooms=rooms, district=district, underground=underground, lobby=lobby)
             else:
                 request.session['show_modal'] = True
                 request.session['modal_message'] = 'Квартира уже добавлена!'
@@ -169,6 +240,9 @@ def lobby_detail_view(request, lobby_id):
             rating, created = Rating.objects.update_or_create(
                 flat=flat, user=request.user, defaults={'score': score}
             )
+        elif 'fields' in request.POST:
+            selected_fields = request.POST.getlist('fields')
+            request.session['selected_fields'] = selected_fields
         else:
             submitted = True
             url = "http://localhost:8000/api/v1/flats"
@@ -217,10 +291,6 @@ def lobby_detail_view(request, lobby_id):
 
         flats = lobby.flats.all()
 
-    # # Pagination for selected flats
-    # flats_paginator = Paginator(flats, 5)  # Show 5 flats per page
-    # flats_page_number = request.GET.get('page_selected')
-    # flats_page_obj = flats_paginator.get_page(flats_page_number)
     show_modal = request.session.pop('show_modal', False)
     modal_message = request.session.pop('modal_message', '')
 
@@ -229,6 +299,7 @@ def lobby_detail_view(request, lobby_id):
         'flats_all': flats_all,
         'flats': flats,
         'submitted': submitted,
+        'selected_fields': selected_fields,
         'min_price': min_price,
         'max_price': max_price,
         'rooms': rooms,
@@ -247,16 +318,19 @@ def lobby_detail_view(request, lobby_id):
     })
 
 
+
 @login_required
 def profile_view(request):
-    # Ensure the profile exists
     profile, created = Profile.objects.get_or_create(user=request.user)
     user = request.user
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Профиль успешно обновлен.')
             return redirect('profile')
+        else:
+            messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
     else:
         form = ProfileForm(instance=profile)
 

@@ -4,9 +4,9 @@
 {% block title %}MAI Lobby System{% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/listlobby.css' %}?v=3.14">
+    <link rel="stylesheet" href="{% static 'css/listlobby.css' %}?v=3.16">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="{% static 'js/listlobby.js' %}?v=2.52" defer></script>
+    <script src="{% static 'js/listlobby.js' %}?v=2.54" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -50,7 +50,7 @@
     </div>
     <div class="list-sidebar">
         <div class="header-lobby">
-        <h2>Лобби</h2>
+            <h2>Лобби</h2>
             <button class="filter-button" onclick="toggleFilterMenu()">Фильтры</button>
         </div>
         <div class="filter-menu" id="filterMenu">
@@ -90,7 +90,7 @@
                 <li class="lobby-item">
                     <div class="lobby-details">
                         <div class="lobby-name">{{ lobby.name }}</div>
-                        <div class="lobby-people">Количество человек: {{ lobby.max_people }}</div>
+                        <div class="lobby-people">Максимальное количество людей: {{ lobby.max_people }}</div>
                         <div class="lobby-people">Количество человек уже в лобби: {{ lobby.members.count }}</div>
                         <div class="lobby-private">Приватное: {{ lobby.is_private|yesno:"Да,Нет" }}</div>
                         <div class="lobby-type">Тип: {{ lobby.get_lobby_type_display }}</div>
@@ -100,7 +100,7 @@
                     <div class="lobby-actions">
                         <form method="post" class="addLobbyForm" action="">
                             {% csrf_token %}
-                                <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
+                            <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
                             {% if lobby.is_private %}
                                 <button type="button" class="join-button" onclick="showJoinModal({{ lobby.id }}, {{ lobby.is_private|yesno:'true,false' }})">Войти</button>
                             {% else %}
@@ -127,7 +127,8 @@
                 <li class="lobby-item">
                     <div class="lobby-details">
                         <div class="lobby-name">{{ lobby.name }}</div>
-                        <div class="lobby-people">Количество человек: {{ lobby.max_people }}</div>
+                        <div class="lobby-people">Максимальное количество людей: {{ lobby.max_people }}</div>
+                        <div class="lobby-people">Количество человек уже в лобби: {{ lobby.members.count }}</div>
                         <div class="lobby-private">Приватное: {{ lobby.is_private|yesno:"Да,Нет" }}</div>
                         <div class="lobby-type">Тип: {{ lobby.get_lobby_type_display }}</div>
                         <div class="lobby-description">Описание: {{ lobby.description }}</div>
@@ -135,6 +136,7 @@
                     </div>
                     <div class="lobby-actions">
                         <a href="{% url 'lobby-detail' lobby.id %}" class="join-button">Войти</a>
+                        <a href="{% url 'edit-lobby' lobby.id %}" class="edit-button">Редактировать</a>
                         <form method="post" class="removeLobbyForm" action="">
                             {% csrf_token %}
                             <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
