@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=2.2">
 {% endblock %}
 
 {% block content %}
@@ -35,7 +35,9 @@
         <input type="hidden" name="next" value="{{ next }}" />
     </form>
     
-    <p><a href="{% url 'password_reset' %}">Забыли пароль?</a></p>
+    <div class="password-reset">
+        <p><a href="{% url 'password_reset' %}">Забыли пароль?</a></p>
+    </div>
     
     <div class="login-prompt">
         <p>Нет аккаунта?</p>

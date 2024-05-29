@@ -8,8 +8,8 @@ body, html {
 
 /* Стили для контейнера регистрации */
 .auth-container {
-    max-width: 400px; /* Уменьшена ширина контейнера для компактности */
-    margin: 50px auto;
+    max-width: 500px;
+    margin: 70px auto 200px;
     padding: 20px;
     background-color: #ffffff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -66,7 +66,6 @@ body, html {
     border-bottom: none;
 }
 
-
 .auth-toggle-button {
     color: #0057B7;
     text-decoration: none;
@@ -76,10 +75,28 @@ body, html {
     text-decoration: underline;
 }
 
+.auth-button-reg {
+    background-color: #0057B7;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 1em;
+    margin-right: 5%;
+    border-radius: 4px;
+    cursor: pointer;
+    align-content: center;
+    width: 100%;
+}
+
+.auth-button:hover {
+    background-color: #003399;
+}
+
 /* Дополнительные стили для кнопки "Войти" */
 .auth-toggle-button {
-    background-color: #f2f2f2;
-    border: 1px solid #0057B7;
+    background-color: #28a745;
+    color: white;
     padding: 10px;
     border-radius: 4px;
     font-size: 14px;
@@ -88,7 +105,7 @@ body, html {
 }
 
 .auth-toggle-button:hover {
-    background-color: #0057B7;
+    background-color: #218838;
     color: white;
     text-decoration: none;
 }

@@ -8,7 +8,7 @@ body, html {
 
 .edit-lobby-container {
     max-width: 600px; /* Увеличена ширина контейнера */
-    margin: 20px auto;
+    margin: 50px auto 150px;
     padding: 20px;
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -64,6 +64,7 @@ body, html {
     font-size: 16px;
     border-radius: 4px;
     margin-top: 20px;
+    width: 100%;
 }
 
 .save-button:hover {

@@ -7,12 +7,12 @@ body, html {
 }
 
 .auth-container {
-    max-width: 400px;
-    margin: 50px auto;
+    max-width: 500px;
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 70px auto 300px;
 }
 
 .auth-container h2 {
@@ -89,12 +89,14 @@ body, html {
     background-color: #218838;
 }
 
-.policy-prompt a {
-    color: #0057B7;
-    text-decoration: none;
+.password-reset {
+    color: #2874c8;
     font-weight: bold;
+    text-decoration: none;
+    text-align: center;
 }
 
-.policy-prompt a:hover {
+.password-reset a:hover {
     text-decoration: underline;
+    border-bottom: none;
 }

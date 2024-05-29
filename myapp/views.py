@@ -22,22 +22,16 @@ def list_lobby_view(request):
     user_lobbies = request.user.joined_lobbies.all()
     form = LobbyForm(request.POST or None)
 
-    filter_name = request.GET.get('filter_name')
-    filter_max_people = request.GET.get('filter_max_people')
-    filter_is_private = request.GET.get('filter_is_private')
-    filter_lobby_type = request.GET.get('filter_lobby_type')
+    filters = {
+        'name__icontains': request.GET.get('filter_name'),
+        'max_people': request.GET.get('filter_max_people'),
+        'is_private': {'true': True, 'false': False}.get(request.GET.get('filter_is_private')),
+        'lobby_type': request.GET.get('filter_lobby_type')
+    }
+    filters = {k: v for k, v in filters.items() if v}
 
-    if filter_name:
-        all_lobbies = all_lobbies.filter(name__icontains=filter_name)
-    if filter_max_people:
-        all_lobbies = all_lobbies.filter(max_people=filter_max_people)
-    if filter_is_private:
-        if filter_is_private == "true":
-            all_lobbies = all_lobbies.filter(is_private=True)
-        elif filter_is_private == "false":
-            all_lobbies = all_lobbies.filter(is_private=False)
-    if filter_lobby_type:
-        all_lobbies = all_lobbies.filter(lobby_type=filter_lobby_type)
+    if filters:
+        all_lobbies = all_lobbies.filter(**filters)
 
     if request.method == 'POST':
         if 'join_lobby' in request.POST:
@@ -45,21 +39,13 @@ def list_lobby_view(request):
             lobby = get_object_or_404(Lobby, id=lobby_id)
             profile = request.user.profile
 
-            if lobby.lobby_type == 'male' and profile.gender != 'male':
+            if lobby.lobby_type in ['male', 'female'] and profile.gender != lobby.lobby_type:
                 return render(request, 'listlobby.html', {
                     'all_lobbies': all_lobbies,
                     'user_lobbies': user_lobbies,
                     'form': form,
                     'show_modal': True,
-                    'modal_message': 'В это лобби могут заходить только мужчины.'
-                })
-            elif lobby.lobby_type == 'female' and profile.gender != 'female':
-                return render(request, 'listlobby.html', {
-                    'all_lobbies': all_lobbies,
-                    'user_lobbies': user_lobbies,
-                    'form': form,
-                    'show_modal': True,
-                    'modal_message': 'В это лобби могут заходить только женщины.'
+                    'modal_message': f'В это лобби могут заходить только {lobby.lobby_type}.'
                 })
 
             if lobby.members.filter(id=request.user.id).exists():
@@ -74,26 +60,17 @@ def list_lobby_view(request):
                     'modal_message': 'Лобби уже переполнено!'
                 })
 
-            if lobby.is_private:
-                password = request.POST.get('password')
-                if lobby.password == password:
-                    if not lobby.members.filter(id=request.user.id).exists():
-                        lobby.members.add(request.user)
-                        return redirect('lobby-detail', lobby_id=lobby_id)
-                    else:
-                        return redirect('lobby-detail', lobby_id=lobby_id)
-                else:
-                    return render(request, 'listlobby.html', {
-                        'all_lobbies': all_lobbies,
-                        'user_lobbies': user_lobbies,
-                        'form': form,
-                        'show_modal': True,
-                        'modal_message': 'Неверный пароль!'
-                    })
+            if lobby.is_private and lobby.password != request.POST.get('password'):
+                return render(request, 'listlobby.html', {
+                    'all_lobbies': all_lobbies,
+                    'user_lobbies': user_lobbies,
+                    'form': form,
+                    'show_modal': True,
+                    'modal_message': 'Неверный пароль!'
+                })
 
-            elif not lobby.members.filter(id=request.user.id).exists():
-                lobby.members.add(request.user)
-                return redirect('lobby-detail', lobby_id=lobby_id)
+            lobby.members.add(request.user)
+            return redirect('lobby-detail', lobby_id=lobby_id)
 
         elif 'delete_lobby' in request.POST:
             lobby_id = request.POST.get('lobby_id')
@@ -185,7 +162,7 @@ def edit_lobby_view(request, lobby_id):
         lobby.lobby_type = lobby_type
         lobby.description = description
         lobby.save()
-        return redirect('lobby-detail', lobby_id=lobby_id)
+        return redirect('list-lobby')
 
     members = lobby.members.all()
     return render(request, 'edit_lobby.html', {'lobby': lobby, 'members': members})
@@ -194,37 +171,40 @@ def edit_lobby_view(request, lobby_id):
 @login_required
 def lobby_detail_view(request, lobby_id):
     lobby = get_object_or_404(Lobby, id=lobby_id)
-    flats = lobby.flats.all()
+    flats = lobby.flats.annotate(average_rating=Avg('ratings__score')).order_by('-average_rating')
     flats_all = request.session.get('flats_all')
     submitted = request.session.get('submitted', False)
 
-    min_price = request.POST.get('min_price')
-    max_price = request.POST.get('max_price')
-    rooms = request.POST.get('rooms')
-    region = request.POST.get('region', '')
-    district = request.POST.get('district')
-    underground = request.POST.get('underground', '')
-
-    price_per_m2_coeff = request.POST.get('price_per_m2_coeff')
-    common_ecology_coeff = request.POST.get('common_ecology_coeff')
-    population_density_coeff = request.POST.get('population_density_coeff')
-    green_spaces_coeff = request.POST.get('green_spaces_coeff')
-    negative_impact_coeff = request.POST.get('negative_impact_coeff')
-    phone_nets_coeff = request.POST.get('phone_nets_coeff')
-    crime_coeff = request.POST.get('crime_coeff')
+    filter_params = {
+        'min_price': request.POST.get('min_price'),
+        'max_price': request.POST.get('max_price'),
+        'rooms': request.POST.get('rooms'),
+        'region': request.POST.get('region', ''),
+        'district': request.POST.get('district'),
+        'underground': request.POST.get('underground', ''),
+        'price_per_m2_coeff': request.POST.get('price_per_m2_coeff'),
+        'common_ecology_coeff': request.POST.get('common_ecology_coeff'),
+        'population_density_coeff': request.POST.get('population_density_coeff'),
+        'green_spaces_coeff': request.POST.get('green_spaces_coeff'),
+        'negative_impact_coeff': request.POST.get('negative_impact_coeff'),
+        'phone_nets_coeff': request.POST.get('phone_nets_coeff'),
+        'crime_coeff': request.POST.get('crime_coeff')
+    }
 
     selected_fields = request.session.get('selected_fields', ['price', 'area'])
 
     if request.method == 'POST':
         if 'add_flat' in request.POST:
-            link = request.POST.get('flat_link')
-            price = request.POST.get('flat_price')
-            total_meters = request.POST.get('flat_total_meters')
-            rooms = request.POST.get('flat_rooms')
-            district = request.POST.get('flat_district')
-            underground = request.POST.get('flat_underground')
-            if not Flat.objects.filter(link=link, lobby=lobby).exists():
-                Flat.objects.create(link=link, price_per_month=price, total_meters=total_meters, rooms=rooms, district=district, underground=underground, lobby=lobby)
+            flat_data = {
+                'link': request.POST.get('flat_link'),
+                'price_per_month': request.POST.get('flat_price'),
+                'total_meters': request.POST.get('flat_total_meters'),
+                'rooms': request.POST.get('flat_rooms'),
+                'district': request.POST.get('flat_district'),
+                'underground': request.POST.get('flat_underground')
+            }
+            if not Flat.objects.filter(link=flat_data['link'], lobby=lobby).exists():
+                Flat.objects.create(lobby=lobby, **flat_data)
             else:
                 request.session['show_modal'] = True
                 request.session['modal_message'] = 'Квартира уже добавлена!'
@@ -237,9 +217,7 @@ def lobby_detail_view(request, lobby_id):
             flat_link = request.POST.get('flat_link')
             score = int(request.POST.get('score'))
             flat = get_object_or_404(Flat, link=flat_link)
-            rating, created = Rating.objects.update_or_create(
-                flat=flat, user=request.user, defaults={'score': score}
-            )
+            Rating.objects.update_or_create(flat=flat, user=request.user, defaults={'score': score})
         elif 'fields' in request.POST:
             selected_fields = request.POST.getlist('fields')
             request.session['selected_fields'] = selected_fields
@@ -250,46 +228,17 @@ def lobby_detail_view(request, lobby_id):
                 'Authorization': 'Basic ' + 'dXNlcjoxMjM0',  # Base64-encoded 'user:1234'
                 'Content-Type': 'application/json',
             }
-            params = {}
-            if min_price:
-                params['min_price'] = min_price
-            if max_price:
-                params['max_price'] = max_price
-            if rooms:
-                params['rooms'] = rooms
-            if region:
-                params['region'] = region
-            if district:
-                params['district'] = district
-            if underground:
-                params['underground'] = underground
-            if price_per_m2_coeff:
-                params['price_per_m2_coeff'] = price_per_m2_coeff
-            if common_ecology_coeff:
-                params['common_ecology_coeff'] = common_ecology_coeff
-            if population_density_coeff:
-                params['population_density_coeff'] = population_density_coeff
-            if green_spaces_coeff:
-                params['green_spaces_coeff'] = green_spaces_coeff
-            if negative_impact_coeff:
-                params['negative_impact_coeff'] = negative_impact_coeff
-            if phone_nets_coeff:
-                params['phone_nets_coeff'] = phone_nets_coeff
-            if crime_coeff:
-                params['crime_coeff'] = crime_coeff
+            params = {k: v for k, v in filter_params.items() if v}
 
             response = requests.get(url, headers=headers, params=params)
             if response.status_code == 200:
-                flats_all = response.json()
-                if flats_all == 'No flats found':
-                    flats_all = None
-
+                flats_all = response.json() if response.json() != 'No flats found' else None
                 request.session['flats_all'] = flats_all
                 request.session['submitted'] = submitted
             else:
                 return HttpResponse('Failed to fetch data', status=500)
 
-        flats = lobby.flats.all()
+        flats = lobby.flats.annotate(average_rating=Avg('ratings__score')).order_by('-average_rating')
 
     show_modal = request.session.pop('show_modal', False)
     modal_message = request.session.pop('modal_message', '')
@@ -300,19 +249,7 @@ def lobby_detail_view(request, lobby_id):
         'flats': flats,
         'submitted': submitted,
         'selected_fields': selected_fields,
-        'min_price': min_price,
-        'max_price': max_price,
-        'rooms': rooms,
-        'region': region,
-        'district': district,
-        'underground': underground,
-        'price_per_m2_coeff': price_per_m2_coeff,
-        'common_ecology_coeff': common_ecology_coeff,
-        'population_density_coeff': population_density_coeff,
-        'green_spaces_coeff': green_spaces_coeff,
-        'negative_impact_coeff': negative_impact_coeff,
-        'phone_nets_coeff': phone_nets_coeff,
-        'crime_coeff': crime_coeff,
+        **filter_params,
         'show_modal': show_modal,
         'modal_message': modal_message,
     })
@@ -360,8 +297,7 @@ class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
 
     def get_redirect_url(self):
-        redirect_to = self.request.GET.get('next', self.get_success_url())
-        return redirect_to
+        return self.request.GET.get('next', self.get_success_url())
 
     def get_success_url(self):
         return reverse_lazy('list-lobby')

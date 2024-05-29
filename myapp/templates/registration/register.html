@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/register.css' %}?v=1.5">
+    <link rel="stylesheet" href="{% static 'css/register.css' %}?v=1.7">
 {% endblock %}
 
 {% block content %}
@@ -27,7 +27,7 @@
             <label for="id_password2">{{ form.password2.label }}</label>
             {{ form.password2 }}
         </div>
-        <button type="submit" class="auth-button">Зарегистрироваться</button>
+        <button type="submit" class="auth-button-reg">Зарегистрироваться</button>
     </form>
 
     <div class="policy-prompt">

@@ -5,7 +5,7 @@
 
 {% block title %}MAI Apartment Selector{% endblock %}
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/lobby.css' %}?v=1.30">
+    <link rel="stylesheet" href="{% static 'css/lobby.css' %}?v=1.31">
     <script src="{% static 'js/lobby.js' %}?v=1.20" defer></script>
 {% endblock %}
 
@@ -156,7 +156,9 @@
         </div>
     </div>
     <div class="selected-apartments">
-        <h2>Список добавленных квартир</h2>
+        <div class="header-lobby">
+            <h2>Список добавленных квартир</h2>
+        </div>
         <div id="selectedList" class="scrollable-list">
             <ul id="flatsAddedList">
                 {% if flats %}
