@@ -41,24 +41,24 @@ MAI Apartment Selector - это веб-сервис, который помога
 
 1. **Клонирование репозитория:**
 
-   \`\`\`bash
+   ```bash
    git clone https://github.com/yourusername/mai-apartment-selector.git
    cd mai-apartment-selector
-   \`\`\`
+   ```
 
 2. **Создание виртуального окружения и установка зависимостей:**
 
-   \`\`\`bash
+   ```bash
    python -m venv venv
    source venv/bin/activate
    pip install -r requirements.txt
-   \`\`\`
+   ```
 
 3. **Настройка базы данных:**
 
-   В \`settings.py\` укажите параметры вашей базы данных PostgreSQL:
+   В `settings.py` укажите параметры вашей базы данных PostgreSQL:
 
-   \`\`\`python
+   ```python
    DATABASES = {
        'default': {
            'ENGINE': 'django.db.backends.postgresql',
@@ -69,20 +69,20 @@ MAI Apartment Selector - это веб-сервис, который помога
            'PORT': '',
        }
    }
-   \`\`\`
+   ```
 
 4. **Применение миграций и создание суперпользователя:**
 
-   \`\`\`bash
+   ```bash
    python manage.py migrate
    python manage.py createsuperuser
-   \`\`\`
+   ```
 
 5. **Запуск сервиса:**
 
-   \`\`\`bash
+   ```bash
    python manage.py runserver
-   \`\`\`
+   ```
 
 ## Использование
 
@@ -106,10 +106,10 @@ MAI Apartment Selector - это веб-сервис, который помога
 
 ### Структура проекта
 
-- \`myapp/\` - основное приложение Django, содержащее модели, представления и шаблоны.
-- \`static/\` - директория для статических файлов (CSS, JavaScript).
-- \`templates/\` - директория для HTML-шаблонов.
-- \`manage.py\` - командный интерфейс для управления проектом.
+- `myapp/` - основное приложение Django, содержащее модели, представления и шаблоны.
+- `static/` - директория для статических файлов (CSS, JavaScript).
+- `templates/` - директория для HTML-шаблонов.
+- `manage.py` - командный интерфейс для управления проектом.
 
 ### Основные используемые технологии
 
