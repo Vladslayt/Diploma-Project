@@ -1,12 +1,11 @@
 {% extends "base_generic.html" %}
 {% load static %}
-{% load bootstrap4 %}
 {% load average %}
 
 {% block title %}MAI Apartment Selector{% endblock %}
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/lobby.css' %}?v=1.31">
-    <script src="{% static 'js/lobby.js' %}?v=1.20" defer></script>
+    <link rel="stylesheet" href="{% static 'css/lobby.css' %}?v=1.39">
+    <script src="{% static 'js/lobby.js' %}?v=1.24" defer></script>
 {% endblock %}
 
 {% block title-lobby %}
@@ -132,21 +131,22 @@
                                     <span class="apartment-underground">Метро: {{ flat.underground }}</span>
                                 {% endif %}
                             </div>
-                            <form class="addForm" method="post" action="{% url 'lobby-detail' lobby.id %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
-                                <input type="hidden" name="flat_link" value="{{ flat.link }}">
-                                <input type="hidden" name="flat_price" value="{{ flat.price_per_month }}">
-                                <input type="hidden" name="flat_total_meters" value="{{ flat.total_meters }}">
-                                <input type="hidden" name="flat_rooms" value="{{ flat.rooms }}">
-                                <input type="hidden" name="flat_district" value="{{ flat.district }}">
-                                <input type="hidden" name="flat_underground" value="{{ flat.underground }}">
-                                <!-- Add hidden inputs for current query parameters -->
-                                {% for key, value in request.GET.items %}
-                                    <input type="hidden" name="{{ key }}" value="{{ value }}">
-                                {% endfor %}
-                                <button type="submit" name="add_flat" class="add-button">Добавить</button>
-                            </form>
+                            <div class="apartment-actions">
+                                <form class="addForm" method="post" action="{% url 'lobby-detail' lobby.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
+                                    <input type="hidden" name="flat_link" value="{{ flat.link }}">
+                                    <input type="hidden" name="flat_price" value="{{ flat.price_per_month }}">
+                                    <input type="hidden" name="flat_total_meters" value="{{ flat.total_meters }}">
+                                    <input type="hidden" name="flat_rooms" value="{{ flat.rooms }}">
+                                    <input type="hidden" name="flat_district" value="{{ flat.district }}">
+                                    <input type="hidden" name="flat_underground" value="{{ flat.underground }}">
+                                    {% for key, value in request.GET.items %}
+                                        <input type="hidden" name="{{ key }}" value="{{ value }}">
+                                    {% endfor %}
+                                    <button type="submit" name="add_flat" class="add-button">Добавить</button>
+                                </form>
+                            </div>
                         </li>
                     {% endfor %}
                 {% else %}
@@ -181,7 +181,7 @@
                                 {% if 'underground' in selected_fields %}
                                     <span class="apartment-underground">Метро: {{ flat.underground }}</span>
                                 {% endif %}
-                                <span class="average-rating">Средняя оценка: 
+                                <span class="average-rating">Средняя оценка:
                                     {% with flat.ratings.all as ratings %}
                                         {% if ratings %}
                                             {{ ratings|average:'score' }}
@@ -198,12 +198,14 @@
                                     <button type="submit" name="rate_flat" class="rate-button">Оценить</button>
                                 </form>
                             </div>
-                            <form class="removeForm" method="post" action="{% url 'lobby-detail' lobby.id %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
-                                <input type="hidden" name="flat_link" value="{{ flat.link }}">
-                                <button type="submit" name="remove_flat" class="remove-button">Удалить</button>
-                            </form>
+                            <div class="apartment-actions">
+                                <form class="removeForm" method="post" action="{% url 'lobby-detail' lobby.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="lobby_id" value="{{ lobby.id }}">
+                                    <input type="hidden" name="flat_link" value="{{ flat.link }}">
+                                    <button type="submit" name="remove_flat" class="remove-button">Удалить</button>
+                                </form>
+                            </div>
                         </li>
                     {% endfor %}
                 {% else %}

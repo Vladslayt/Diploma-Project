@@ -40,12 +40,17 @@ def list_lobby_view(request):
             profile = request.user.profile
 
             if lobby.lobby_type in ['male', 'female'] and profile.gender != lobby.lobby_type:
+                if lobby.lobby_type == 'male':
+                    type_lobby = 'мужчины'
+                else:
+                    type_lobby = 'женщины'
+
                 return render(request, 'listlobby.html', {
                     'all_lobbies': all_lobbies,
                     'user_lobbies': user_lobbies,
                     'form': form,
                     'show_modal': True,
-                    'modal_message': f'В это лобби могут заходить только {lobby.lobby_type}.'
+                    'modal_message': f'В это лобби могут заходить только {type_lobby}.'
                 })
 
             if lobby.members.filter(id=request.user.id).exists():
@@ -120,7 +125,7 @@ def edit_lobby_view(request, lobby_id):
         if 'remove_member' in request.POST:
             member_id = request.POST.get('member_id')
             member = get_object_or_404(User, id=member_id)
-            if member != request.user:  # Prevent removing oneself
+            if member != request.user:
                 lobby.members.remove(member)
             return redirect('edit-lobby', lobby_id=lobby_id)
 
@@ -232,7 +237,9 @@ def lobby_detail_view(request, lobby_id):
 
             response = requests.get(url, headers=headers, params=params)
             if response.status_code == 200:
-                flats_all = response.json() if response.json() != 'No flats found' else None
+                flats_all = response.json()
+                if flats_all != 'No flats found':
+                    flats_all = flats_all[:100]
                 request.session['flats_all'] = flats_all
                 request.session['submitted'] = submitted
             else:

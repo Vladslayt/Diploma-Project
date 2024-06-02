@@ -1,24 +1,22 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     const coefficientInputs = document.querySelectorAll('input[type="number"].coefficient');
+    const modal = document.getElementById("myModal");
+    const span = document.querySelector(".close");
+    const fieldsButton = document.querySelector('.filter-fields-button');
+    const fieldsMenu = document.getElementById('fields-menu');
 
+    // Event listeners for coefficient inputs
     coefficientInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            if (this.value > 5) {
-                this.value = 5;
-            } else if (this.value < 1) {
-                this.value = 1;
-            }
+        input.addEventListener('input', () => {
+            input.value = Math.max(1, Math.min(5, input.value));
         });
 
-        input.addEventListener('blur', function() {
-            if (this.value === '') {
-                this.value = 1;
+        input.addEventListener('blur', () => {
+            if (input.value === '') {
+                input.value = 1;
             }
         });
     });
-
-    const modal = document.getElementById("myModal");
-    const span = document.querySelector(".close");
 
     // Close modal when clicking on <span> (x) or anywhere outside the modal
     span.onclick = () => modal.style.display = "none";
@@ -26,36 +24,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (event.target === modal) modal.style.display = "none";
     };
 
-    // Сохранение положения прокрутки при выходе со страницы
-    window.addEventListener('beforeunload', function() {
-        localStorage.setItem('scrollPosition', document.getElementById('results').scrollTop);
-        localStorage.setItem('scrollPositionSelected', document.getElementById('selectedList').scrollTop);
-    });
-
-    // Восстановление положения прокрутки при загрузке страницы
-    if (localStorage.getItem('scrollPosition') !== null) {
-        document.getElementById('results').scrollTop = localStorage.getItem('scrollPosition');
-    }
-
-    if (localStorage.getItem('scrollPositionSelected') !== null) {
-        document.getElementById('selectedList').scrollTop = localStorage.getItem('scrollPositionSelected');
-    }
-
-    document.querySelector('.filter-fields-button').addEventListener('click', function() {
-        const fieldsMenu = document.getElementById('fields-menu');
-        if (fieldsMenu.style.display === 'block') {
-            fieldsMenu.style.display = 'none';
-        } else {
-            fieldsMenu.style.display = 'block';
-        }
+    // Toggle fields menu display
+    fieldsButton.addEventListener('click', () => {
+        fieldsMenu.style.display = fieldsMenu.style.display === 'block' ? 'none' : 'block';
     });
 });
 
 function toggleParticipants() {
-    var participantsList = document.getElementById("participants-list");
-    if (participantsList.style.display === "none" || participantsList.style.display === "") {
-        participantsList.style.display = "block";
-    } else {
-        participantsList.style.display = "none";
-    }
+    const participantsList = document.getElementById("participants-list");
+    participantsList.style.display = participantsList.style.display === "block" ? "none" : "block";
 }

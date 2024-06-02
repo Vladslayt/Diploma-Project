@@ -1,24 +1,18 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Modal functionality
     setupModalFunctionality();
 
-    // Scroll position functionality
     setupScrollPosition();
 
-    // Password field toggle functionality
     setupPasswordFieldToggle();
 });
 
-// Modal functionality
 function setupModalFunctionality() {
     const span = document.querySelector(".close");
 
-    // Close modal when clicking on <span> (x)
    if (span) {
         span.onclick = () => closeAllModals();
     }
 
-    // Close modal when clicking outside the modal
     window.onclick = event => {
         if (event.target.classList.contains("modal")) {
             closeAllModals();
@@ -30,13 +24,10 @@ function closeAllModals() {
     const modals = document.querySelectorAll(".modal");
     modals.forEach(modal => modal.style.display = "none");
 }
-
-// Scroll position functionality
 function setupScrollPosition() {
     const allLobbies = document.getElementById('allLobbies');
     const userLobbies = document.getElementById('userLobbies');
 
-    // Restore scroll position
     if (allLobbies) {
         allLobbies.scrollTop = localStorage.getItem('allLobbiesScrollPosition') || 0;
     }
@@ -55,7 +46,6 @@ function setupScrollPosition() {
     });
 }
 
-// Password field toggle functionality
 function setupPasswordFieldToggle() {
     const isPrivateCheckbox = document.getElementById('id_is_private');
     const passwordField = document.getElementById('passwordField');
@@ -65,28 +55,23 @@ function setupPasswordFieldToggle() {
             passwordField.style.display = this.checked ? 'block' : 'none';
         });
 
-        // Check on page load
         passwordField.style.display = isPrivateCheckbox.checked ? 'block' : 'none';
     }
 }
 
-// Show the modal with lobby id
 function showJoinModal(lobbyId, isPrivate) {
     if (isPrivate) {
         document.getElementById("modal_lobby_id").value = lobbyId;
         document.getElementById("joinModal").style.display = "block";
     } else {
-        // Submit the form directly for public lobbies
         submitJoinLobbyForm(lobbyId);
     }
 }
 
-// Close the modal
 function closeJoinModal() {
     document.getElementById("joinModal").style.display = "none";
 }
 
-// Submit join lobby form
 function submitJoinLobbyForm(lobbyId) {
     const form = document.createElement('form');
     form.method = 'post';
@@ -116,7 +101,6 @@ function submitJoinLobbyForm(lobbyId) {
     form.submit();
 }
 
-// Toggle filter menu
 function toggleFilterMenu() {
     const filterMenu = document.getElementById("filterMenu");
     filterMenu.style.display = filterMenu.style.display === "block" ? "none" : "block";

@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // Check on page load
         passwordField.style.display = isPrivateCheckbox.checked ? 'block' : 'none';
     }
 });

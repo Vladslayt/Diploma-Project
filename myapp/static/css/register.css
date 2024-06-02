@@ -1,10 +1,3 @@
-/* Основные стили для всего документа */
-body, html {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f2f2f2;
-    margin: 0;
-    padding: 0;
-}
 
 /* Стили для контейнера регистрации */
 .auth-container {
@@ -22,7 +15,7 @@ body, html {
 }
 
 .form-group {
-    margin-bottom: 10px; /* Уменьшено расстояние между полями для компактности */
+    margin-bottom: 10px;
 }
 
 .form-group label {
@@ -34,7 +27,7 @@ body, html {
 
 .form-group input {
     width: 95%;
-    padding: 8px; /* Уменьшено внутреннее отступление для компактности */
+    padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;

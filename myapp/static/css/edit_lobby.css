@@ -1,13 +1,5 @@
-/* Основные стили для всего документа */
-body, html {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f2f2f2;
-    margin: 0;
-    padding: 0;
-}
-
 .edit-lobby-container {
-    max-width: 600px; /* Увеличена ширина контейнера */
+    max-width: 600px;
     margin: 50px auto 150px;
     padding: 20px;
     background-color: white;
