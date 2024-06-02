@@ -83,6 +83,12 @@ def list_lobby_view(request):
             lobby.delete()
             return redirect('list-lobby')
 
+        elif 'leave_lobby' in request.POST:
+            lobby_id = request.POST.get('lobby_id')
+            lobby = get_object_or_404(Lobby, id=lobby_id)
+            lobby.members.remove(request.user)
+            return redirect('list-lobby')
+
         elif 'create_lobby' in request.POST:
             name = request.POST.get('name')
             max_people = request.POST.get('max_people')

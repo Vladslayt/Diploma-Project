@@ -177,8 +177,7 @@ main {
     width: 100%;
 }
 
-.join-button, .remove-button, .edit-button {
-    background-color: #0057B7;
+.join-button, .remove-button, .edit-button, .leave-button {
     color: white;
     border: none;
     padding: 8px 16px;
@@ -189,15 +188,20 @@ main {
     text-decoration: none;
 }
 
+.join-button, .edit-button {
+    background-color: #0057B7;
+}
+
+
 .join-button:hover, .remove-button:hover, .edit-button:hover {
     background-color: #003399;
 }
 
-.remove-button {
+.remove-button, .leave-button {
     background-color: #dc3545;
 }
 
-.remove-button:hover {
+.remove-button:hover, .leave-button:hover {
     background-color: #c82333;
 }
 
